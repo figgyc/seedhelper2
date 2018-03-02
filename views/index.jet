@@ -1,0 +1,17 @@
+{{extends "layout.jet"}} {{block body()}}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to Seedhelper</h1>
+    <p class="lead">The website to help people without GPUs and/or homebrew to get their movable.sed files.</p>
+    <hr class="my-4">
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="/register" role="button">Sign up</a>
+        <a class="btn btn-lg" href="/login" role="button">Login</a>
+    </p>
+</div>
+<main class="container">
+    <h3>So what is this, anyway?</h3>
+    <p> Seedhelper is a website that helps people with GPUs and/or a homebrew 3DS device and those without to link together. Users without the needed devices to do the Seedminer method themselves can upload their friend code or their movable_part1.sed and sit back until volunteer workers process their files. If you want to help out, use our friendly tutorial or our automated script to bruteforce movable.sed, obtain movable_part1.sed with seedstarter or both.</p>
+    <h3>How do I use the website?</h3>
+    <p>There are many help texts throughout the new Seedhelper to direct you where you need to go. Get started by signing up above!</p>
+</main>
+{{end}}

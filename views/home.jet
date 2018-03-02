@@ -1,0 +1,40 @@
+{{extends "layout.jet"}} {{block body()}}
+<main class="container">
+    <h3>Main Page</h3>
+    {{if len(user.Devices) > 0}}
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Friend Code</th>
+                <th>Movable</th>
+                <th>Part1</th>
+                <th>Worker Friend Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range device := user.Devices}}
+            <tr>
+                <td>{{device.Name}}</td>
+                <td>{{device.FriendCode}}</td>
+                <td>{{if device.HasMovable}}
+                    <a href="/devices/{{device.ID}}/movable.sed">Download</a>
+                    {{else}}
+                    Unavaliable
+                    {{end}}</td>
+                <td>{{if device.HasPart1}}
+                    <a href="/devices/{{device.ID}}/movable_part1.sed">Download</a>
+                    {{else}}
+                    Unavaliable
+                    {{end}}</td>
+                <td>{{device.WorkerFriendCode}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+    {{else}}
+    No devices have been added.
+    <h3></h3>
+    {{end}}
+</main>
+{{end}}
