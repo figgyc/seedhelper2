@@ -1,40 +1,166 @@
 {{extends "layout.jet"}} {{block body()}}
 <main class="container">
-    <h3>Main Page</h3>
-    {{if len(user.Devices) > 0}}
-    <table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th>Name</th>
-                <th>Friend Code</th>
-                <th>Movable</th>
-                <th>Part1</th>
-                <th>Worker Friend Code</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{range device := user.Devices}}
-            <tr>
-                <td>{{device.Name}}</td>
-                <td>{{device.FriendCode}}</td>
-                <td>{{if device.HasMovable}}
-                    <a href="/devices/{{device.ID}}/movable.sed">Download</a>
-                    {{else}}
-                    Unavaliable
-                    {{end}}</td>
-                <td>{{if device.HasPart1}}
-                    <a href="/devices/{{device.ID}}/movable_part1.sed">Download</a>
-                    {{else}}
-                    Unavaliable
-                    {{end}}</td>
-                <td>{{device.WorkerFriendCode}}</td>
-            </tr>
-            {{end}}
-        </tbody>
-    </table>
-    {{else}}
-    No devices have been added.
-    <h3></h3>
-    {{end}}
+    <script async src="/static/js/script.js"></script>
+    <h1>Seedhelper 2</h1>
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button disabled class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Welcome!
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    Welcome to Seedhelper 2! This service is supported by the people who run the bruteforce script; see the bottom of this page
+                    for more info on that. To use this service, type your Friend Code
+                    <b>without dashes</b> and your id0 in the box below. Your id0 is the random-looking name of the folder inside
+                    the Nintendo 3DS folder on your SD card.
+                    <form>
+                        <div class="form-group">
+                            <label for="friendCode">Friend code</label>
+                            <input required type="text" class="form-control" id="friendCode" placeholder="123456789012">
+                        </div>
+                        <div class="form-group">
+                            <label for="id0">ID0</label>
+                            <input required type="text" class="form-control" id="id0" placeholder="52f10c83610ebca1a059c0bae8255eb">
+                        </div>
+
+                        <button id="beginButton" class="btn btn-primary">Go</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <button disabled class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Step 1: Add the bot
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="card-body">
+                    The friend code 0000-0000-0000 (Mii name figgyc) is connected to this website and will automatically retrieve your movable_part1
+                    when you add it back. Simply add it back and wait for it to process your friend code.
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                            aria-valuemax="100" style="width: 75%">Waiting...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingThree">
+                <h5 class="mb-0">
+                    <button disabled class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false"
+                        aria-controls="collapseThree">
+                        Step 3: Bruteforce
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div class="card-body">
+                    If you have your own GPU, then
+                    <a href="#" id="downloadPart1">download movable_part1.sed</a> and bruteforce the movable.sed yourself (use
+                    <a href="https://marenthyu.github.io/3dsSeedMinerGuide/seedminerFriend.html">this guide</a> from section 2 onwards). Otherwise, press Continue if you need someone else to bruteforce
+                    it.
+                    <button id="continue" class="btn btn-primary">Continue</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingFour">
+                <h5 class="mb-0">
+                    <button disabled class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false"
+                        aria-controls="collapseFour">
+                        Step 4: Wait
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                <div class="card-body">
+                    Wait for the bruteforce to complete.
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                            aria-valuemax="100" style="width: 75%">Bruteforceing...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="headingFive">
+                <h5 class="mb-0">
+                    <button disabled class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false"
+                        aria-controls="collapseFive">
+                        Step 5: Done!
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+                <div class="card-body">
+                    <a href="#" id="downloadPart1">Download movable.sed</a> and inject your DSiWare. There are many ways to do this but I recommend you
+                    use
+                    <a href="https://github.com/knight-ryu12/Seedplanter/releases">Seedplanter</a>. Here's how:
+                    <ol>
+                        <li>Download and install
+                            <a href="http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html">Java</a>
+                        </li>
+                        <li>Download
+                            <a href="https://3ds.hacks.guide/installing-boot9strap-(dsiware-game-injection)">an injection zip for your reason (scroll to "The sudokuhax injection .zip corresponding to your
+                                region")
+                            </a>
+                        </li>
+                        <li>Download
+                            <a href="https://github.com/knight-ryu12/Seedplanter/releases">Seedplanter</a>
+                        </li>
+                        <li>Find ctcert.bin (can't tell you how!)</li>
+                        <li>Open Seedplanter.jar and browse for the injection zip, ctcert.bin and the movable.sed</li>
+                        <li>Power on your 3DS and open System Settings</li>
+                        <li>Open Data Management, DSiWare and System Memory</li>
+                        <li>Select the game you want to hack, press Copy and press Yes</li>
+                        <li>Exit System Settings and power off your 3DS</li>
+                        <li>Put your 3DS's SD card into your computer</li>
+                        <li>Browse for the DSiWare which is on your 3DS's SD card in the Nintendo 3DS/[id0]/[id1]/Nintendo DSiWare/something.bin
+                            file
+                        </li>
+                        <li>Press inject</li>
+                        <li>Put the SD card back into your 3DS and turn it on</li>
+                        <li>Follow
+                            <a href="https://marenthyu.github.io/3dsSeedMinerGuide/DIS.html">this</a> from Section Three onwards.</li>
+                    </ol>
+                    Thanks to the people who run the bruteforcing script who make this service possible!
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="accordion2">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        How to support Seedhelper
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion2">
+                <div class="card-body">
+                    Seedhelper is powered by the people who run a special script and lend their GPU time to the service.
+                    Here's how to do that yourself:
+                    <ol>
+                        <li>Download and install <a href="https://www.python.org/downloads/">Python 3 (not 2)</a></li>
+                        <li>Download seedminer and extract the zip</li>
+                        <li>Download <a href="static/seedminer_autolauncher.py">seedminer_autolauncher.py</a></li>
+                        <li>Download the <a href="static/bfcl.exe">no-pause bfcl.exe mod</a></li>
+                        <li>Copy seedminer_autolauncher.py and bfcl.exe to the seedminer folder.</li>
+                        <li>Double click seedminer_autolauncher.py to start working. Press Ctrl+C inside the command window to stop working.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 {{end}}
