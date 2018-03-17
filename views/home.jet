@@ -15,7 +15,7 @@
             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
                     Welcome to Seedhelper 2! This service is supported by the people who run the bruteforce script; see the bottom of this page
-                    for more info on that. To use this service, type your Friend Code
+                    for more info on that. The seedminer method has some prerequisites: follow the first page of <a href="https://jisagi.github.io/SeedminerGuide/">this guide</a> before using this service. To use this service, type your Friend Code
                     <b>without dashes</b> and your id0 in the box below. Your id0 is the random-looking name of the folder inside
                     the Nintendo 3DS folder on your SD card.
                     <form>
@@ -65,7 +65,7 @@
                 <div class="card-body">
                     If you have your own GPU, then
                     <a href="#" id="downloadPart1">download movable_part1.sed</a> and bruteforce the movable.sed yourself (use
-                    <a href="https://marenthyu.github.io/3dsSeedMinerGuide/seedminerFriend.html">this guide</a> from section 2 onwards). Otherwise, press Continue if you need someone else to bruteforce
+                    <a href="https://jisagi.github.io/SeedminerGuide/seedminerSelf.html#section2">this guide</a>). Otherwise, press Continue if you need someone else to bruteforce
                     it.
                     <button id="continue" class="btn btn-primary">Continue</button>
                 </div>
@@ -101,8 +101,9 @@
             </div>
             <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
                 <div class="card-body">
-                    <a href="#" id="downloadPart1">Download movable.sed</a> and inject your DSiWare. There are many ways to do this but I recommend you
-                    use
+                    <a href="#" id="downloadMovable">Download movable.sed</a> and inject your DSiWare. <!--
+                        // i'm not sure if seedplanter is prod ready yet. when it is it will probably replace tadpole in jisagi guide anyway
+                    There are many ways to do this but I recommend you use
                     <a href="https://github.com/knight-ryu12/Seedplanter/releases">Seedplanter</a>. Here's how:
                     <ol>
                         <li>Download and install
@@ -130,8 +131,10 @@
                         <li>Put the SD card back into your 3DS and turn it on</li>
                         <li>Follow
                             <a href="https://marenthyu.github.io/3dsSeedMinerGuide/DIS.html">this</a> from Section Three onwards.</li>
-                    </ol>
-                    Thanks to the people who run the bruteforcing script who make this service possible!
+                    </ol>-->
+                    <a href="https://jisagi.github.io/SeedminerGuide/dsiwareInjection.html">Follow this guide.</a>
+                    Thanks to the people who run the bruteforcing script who make this service possible!<br>
+                    <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
                 </div>
             </div>
         </div>
@@ -152,7 +155,7 @@
                     Here's how to do that yourself:
                     <ol>
                         <li>Download and install <a href="https://www.python.org/downloads/">Python 3 (not 2)</a></li>
-                        <li>Download seedminer and extract the zip</li>
+                        <li>Download <a href="https://github.com/zoogie/seedminer/releases">seedminer</a> and extract the zip</li>
                         <li>Download <a href="static/seedminer_autolauncher.py">seedminer_autolauncher.py</a></li>
                         <li>Download the <a href="static/bfcl.exe">no-pause bfcl.exe mod</a></li>
                         <li>Copy seedminer_autolauncher.py and bfcl.exe to the seedminer folder.</li>
