@@ -1,38 +1,41 @@
 package main
 
 import (
+	"bytes"
+	"crypto/sha1"
+	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+	"strconv"
+	"time"
 
 	"github.com/CloudyKit/jet"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	"github.com/kidstuff/mongostore"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var view *jet.Set
-var store *mongostore.MongoStore
 var mgoSession mgo.Session
 var devices *mgo.Collection
 var connections map[string]*websocket.Conn
 
 // Device : struct for devices
 type Device struct {
-	FriendCode string
+	FriendCode uint64
 	ID0        string `bson:"_id"`
 	HasMovable bool
 	HasPart1   bool
-	LFCS       []byte
+	HasAdded   bool
+	WantsBF    bool
+	LFCS       [4]byte
+	MSed       [0x140]byte
+	ExpiryTime time.Time `bson:",omitempty"`
 }
-
-// pool of devices for bot, and for bfers
-var botFCs *mgo.Collection
-var jobDevices *mgo.Collection
-var workingDevices *mgo.Collection
 
 func renderTemplate(template string, vars jet.VarMap, request *http.Request, writer http.ResponseWriter, context interface{}) {
 	t, err := view.GetTemplate(template)
@@ -55,12 +58,8 @@ func main() {
 		panic(err)
 	}
 	defer mgoSession.Close()
-	store = mongostore.NewMongoStore(mgoSession.DB("sessions").C("sessions"), 86400, true, []byte(os.Getenv("SESSION_SECRET")))
 
 	devices = mgoSession.DB("main").C("devices")
-	botFCs = mgoSession.DB("main").C("botFCs")
-	jobDevices = mgoSession.DB("main").C("jobDevices")
-	workingDevices = mgoSession.DB("main").C("workingDevices")
 
 	// init templates
 	view = jet.NewHTMLSet("./views")
@@ -76,6 +75,7 @@ func main() {
 	})
 
 	// client:
+	connections = make(map[string]*websocket.Conn)
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -91,19 +91,20 @@ func main() {
 		for {
 			messageType, p, err := conn.ReadMessage()
 			if err != nil {
-				log.Println(err)
+				log.Println("disconnection?", err)
 				return
 			}
 			if messageType == websocket.TextMessage {
 				var object map[string]interface{}
-				err := json.Unmarshal(p, object)
+				err := json.Unmarshal(p, &object)
 				if err != nil {
 					log.Println(err)
-					return
+					//return
 				}
 				if object["id0"] == nil {
-					return
+					//return
 				}
+				fmt.Println(object, "packet")
 				isRegistered := false
 				for _, v := range connections {
 					if v == conn {
@@ -116,86 +117,118 @@ func main() {
 
 				if object["request"] == "bruteforce" {
 					// add to BF pool
-					query := jobDevices.Find(Device{ID0: object["id0"].(string)})
+					query := devices.Find(bson.M{"_id": object["id0"].(string)})
 					count, err := query.Count()
 					if err != nil {
 						log.Println(err)
-						return
+						//return
 					}
 					if count > 1 {
 						var device Device
-						err = query.One(device)
+						err = query.One(&device)
 						if err != nil {
 							log.Println(err)
-							return
+							//return
 						}
 						if device.HasPart1 == true {
-							err = jobDevices.Insert(device)
+							change := mgo.Change{
+								Update: bson.M{"$set": bson.M{"wantsbf": true}},
+							}
+							_, err = query.Apply(change, &device)
 							if err != nil {
 								log.Println(err)
-								return
+								//return
 							}
 						}
 					} else {
-						return
+						//return
 					}
 				} else if object["friendCode"] != nil {
 					// add to bot pool
 					// TODO: verify fc
-					device := Device{FriendCode: object["friendCode"].(string), ID0: object["id0"].(string)}
-					err = devices.Insert(device)
+					/*
+						based on https://github.com/ihaveamac/Kurisu/blob/master/addons/friendcode.py#L24
+						    def verify_fc(self, fc):
+								fc = int(fc.replace('-', ''))
+								if fc > 0x7FFFFFFFFF:
+									return None
+								principal_id = fc & 0xFFFFFFFF
+								checksum = (fc & 0xFF00000000) >> 32
+								return (fc if hashlib.sha1(struct.pack('<L', principal_id)).digest()[0] >> 1 == checksum else None)
+					*/
+					valid := true
+					fc, err := strconv.Atoi(object["friendCode"].(string))
 					if err != nil {
-						log.Println(err)
-						return
+						valid = false
 					}
-					err = botFCs.Insert(object["friendCode"].(string))
-					if err != nil {
-						log.Println(err)
-						return
+					if fc > 0x7FFFFFFFFF {
+						valid = false
 					}
-					msg := "{\"status\": \"friendCodeAdded\"}"
-					if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-						log.Println(err)
-						return
+					principalID := fc & 0xFFFFFFFF
+					checksum := (fc & 0xFF00000000) >> 32
+
+					pidb := make([]byte, 4)
+					binary.LittleEndian.PutUint32(pidb, uint32(principalID))
+					if int(sha1.Sum(pidb)[0])>>1 != checksum {
+						valid = false
 					}
-				} else {
-					// checc
-					query := jobDevices.Find(Device{ID0: object["id0"].(string)})
-					count, err := query.Count()
-					if err != nil {
-						log.Println(err)
-						return
-					}
-					if count > 1 {
-						var device Device
-						err = query.One(device)
-						if err != nil {
+					if valid == false {
+						msg := "{\"status\": \"friendCodeInvalid\"}"
+						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 							log.Println(err)
 							return
 						}
+					}
+					device := Device{FriendCode: uint64(fc), ID0: object["id0"].(string)}
+					_, err = devices.Upsert(device, device)
+					if err != nil {
+						log.Println(err)
+						//return
+					}
+					msg := "{\"status\": \"friendCodeProcessing\"}"
+					if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+						log.Println(err)
+						//return
+					}
+
+				} else {
+					// checc
+					fmt.Println("check")
+					query := devices.Find(bson.M{"_id": object["id0"].(string)})
+					count, err := query.Count()
+					if err != nil {
+						log.Println(err)
+						//return
+					}
+					if count > 0 {
+						var device Device
+						err = query.One(&device)
+						if err != nil {
+							log.Println(err)
+							//return
+						}
 						if device.HasMovable == true {
-							msg := "{\"status\": \"movablePart1\"}"
-							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-								log.Println(err)
-								return
-							}
-						} else if device.HasPart1 == true {
 							msg := "{\"status\": \"done\"}"
 							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 								log.Println(err)
-								return
+								//return
+							}
+						} else if device.HasPart1 == true {
+							msg := "{\"status\": \"movablePart1\"}"
+							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+								log.Println(err)
+								//return
 							}
 						} else {
-							if device.HasPart1 == true {
-								msg := "{\"status\": \"friendCodeAdded\"}"
-								if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-									log.Println(err)
-									return
-								}
+							msg := "{\"status\": \"friendCodeAdded\"}"
+							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+								log.Println(err)
+								//return
 							}
 						}
 					} else {
-						return
+						fmt.Println("hell")
+						//return
 					}
 				}
 			} else if messageType == websocket.CloseMessage {
@@ -212,97 +245,113 @@ func main() {
 	// part1 auto script:
 	// /getfcs
 	router.HandleFunc("/getfcs", func(w http.ResponseWriter, r *http.Request) {
-		query := botFCs.Find(nil)
+		query := devices.Find(bson.M{"haspart1": false, "hasadded": false})
 		count, err := query.Count()
 		if err != nil || count < 1 {
 			w.Write([]byte("nothing"))
 			return
 		}
-		var fcs []string
-		err = query.All(fcs)
-		if err != nil || len(fcs) < 1 {
+		var aDevices []Device
+		err = query.All(&aDevices)
+		if err != nil || len(aDevices) < 1 {
 			w.Write([]byte("nothing"))
 			return
 		}
-
-		for _, fc := range fcs {
-			w.Write([]byte(fc))
+		for _, device := range aDevices {
+			w.Write([]byte(strconv.FormatUint(device.FriendCode, 10)))
 			w.Write([]byte("\n"))
 		}
 		return
 	})
 	// /added/fc
 	router.HandleFunc("/added/{fc}", func(w http.ResponseWriter, r *http.Request) {
-		fc := mux.Vars(r)["fc"]
-
-		query := jobDevices.Find(Device{FriendCode: fc})
-		count, err := query.Count()
+		b := mux.Vars(r)["fc"]
+		a, err := strconv.Atoi(b)
 		if err != nil {
+			w.Write([]byte("fail"))
 			log.Println(err)
 			return
 		}
-		if count > 1 {
-			var device Device
-			err = query.One(device)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			for id0, conn := range connections {
-				if id0 == device.ID0 {
-					msg := "{\"status\": \"friendCodeAdded\"}"
-					if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-						log.Println(err)
-						return
-					}
+		fc := uint64(a)
+
+		fmt.Println(r, &r)
+
+		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"hasadded": "true"}})
+		if err != nil && err != mgo.ErrNotFound {
+			w.Write([]byte("fail"))
+			log.Println("a", err)
+			return
+		}
+
+		query := devices.Find(bson.M{"friendcode": fc})
+		var device Device
+		err = query.One(&device)
+		if err != nil {
+			w.Write([]byte("fail"))
+			log.Println("x", err)
+			return
+		}
+		for id0, conn := range connections {
+			fmt.Println(id0, device.ID0, "hello!")
+			if id0 == device.ID0 {
+				msg := "{\"status\": \"friendCodeAdded\"}"
+				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+					log.Println(err)
+					return
 				}
 			}
 		}
+		w.Write([]byte("success"))
+
 	})
 
 	// /lfcs/fc
-	// get param lfcs is lfcs as hex escaped eg %10%22%65%00 or whatevs
+	// get param lfcs is lfcs as hex eg 34cd12ab or whatevs
 	router.HandleFunc("/lfcs/{fc}", func(w http.ResponseWriter, r *http.Request) {
-		fc := mux.Vars(r)["fc"]
+		b := mux.Vars(r)["fc"]
+		a, err := strconv.Atoi(b)
+		if err != nil {
+			w.Write([]byte("fail"))
+			log.Println(err)
+			return
+		}
+		fc := uint64(a)
+
 		lfcs, ok := r.URL.Query()["lfcs"]
 		if ok == false {
 			return
 		}
 
-		query := jobDevices.Find(Device{FriendCode: fc})
-		count, err := query.Count()
+		sliceLFCS, err := hex.DecodeString(lfcs[0])
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		if count > 1 {
-			var device Device
-			err = query.One(device)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			device.LFCS = []byte(lfcs[0])
-			err = devices.Insert(device)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			err = jobDevices.Remove(Device{FriendCode: fc})
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			for id0, conn := range connections {
-				if id0 == device.ID0 {
-					msg := "{\"status\": \"movablePart1\"}"
-					if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-						log.Println(err)
-						return
-					}
+		var x [4]byte
+		copy(x[:], sliceLFCS)
+		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"haspart1": true, "lfcs": x}})
+		if err != nil && err != mgo.ErrNotFound {
+			log.Println(err)
+			return
+		}
+
+		query := devices.Find(bson.M{"friendcode": fc})
+		var device Device
+		err = query.One(&device)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		for id0, conn := range connections {
+			if id0 == device.ID0 {
+				msg := "{\"status\": \"movablePart1\"}"
+				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+					log.Println(err)
+					return
 				}
 			}
 		}
+
 	})
 
 	// msed auto script:
@@ -310,32 +359,183 @@ func main() {
 	router.HandleFunc("/cancel/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
 		fmt.Println(id0)
+
+		err := devices.Update(bson.M{"_id": id0}, bson.M{"$unset": bson.M{"expirytime": ""}})
+		if err != nil {
+			w.Write([]byte("error"))
+			return
+		}
+		w.Write([]byte("success"))
+
 	})
 	// /getwork
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
-
+		query := devices.Find(bson.M{"haspart1": true, "expirytime": bson.M{"$ne": time.Time{}}})
+		count, err := query.Count()
+		if err != nil || count < 1 {
+			w.Write([]byte("nothing"))
+			return
+		}
+		var aDevice Device
+		err = query.One(&aDevice)
+		if err != nil {
+			w.Write([]byte("nothing"))
+			fmt.Println(err)
+			return
+		}
+		w.Write([]byte(aDevice.ID0))
 	})
 	// /claim/id0
 	router.HandleFunc("/claim/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
-		fmt.Println(id0)
+		//fmt.Println(id0)
+		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now()}})
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		w.Write([]byte("success"))
 	})
 	// /part1/id0
-	// this is also used by client if they want self BF
+	// this is also used by client if they want self BF so /claim is needed
 	router.HandleFunc("/part1/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
-		fmt.Println(id0)
+		query := devices.Find(bson.M{"_id": id0})
+		count, err := query.Count()
+		if err != nil || count < 1 {
+			w.Write([]byte("error"))
+			fmt.Println("z", err, count)
+			return
+		}
+		var device Device
+		err = query.One(&device)
+		if err != nil || device.HasPart1 == false {
+			w.Write([]byte("error"))
+			fmt.Println("a", err)
+			return
+		}
+		buf := bytes.NewBuffer(make([]byte, 0, 0x1000))
+		leLFCS := make([]byte, 8)
+		binary.LittleEndian.PutUint32(leLFCS, binary.BigEndian.Uint32(device.LFCS[:]))
+		_, err = buf.Write(leLFCS)
+		if err != nil {
+			w.Write([]byte("error"))
+			fmt.Println("b", err)
+			return
+		}
+		_, err = buf.Write(make([]byte, 0x8))
+		if err != nil {
+			w.Write([]byte("error"))
+			fmt.Println("c", err)
+			return
+		}
+		_, err = buf.Write([]byte(device.ID0))
+		if err != nil {
+			w.Write([]byte("error"))
+			fmt.Println("d", err)
+			return
+		}
+		_, err = buf.Write(make([]byte, 0xFD0))
+		if err != nil {
+			w.Write([]byte("error"))
+			fmt.Println("e", err)
+			return
+		}
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.Header().Set("Content-Disposition", "inline; filename=\"movable_part1.sed\"")
+		w.Write(buf.Bytes())
+	})
+	// /movable/id0
+	// this is also used by client if they want self BF so /claim is needed
+	router.HandleFunc("/movable/{id0}", func(w http.ResponseWriter, r *http.Request) {
+		id0 := mux.Vars(r)["id0"]
+		query := devices.Find(bson.M{"_id": id0})
+		count, err := query.Count()
+		if err != nil || count < 1 {
+			fmt.Println(err)
+			return
+		}
+		var device Device
+		err = query.One(&device)
+		if err != nil || device.HasMovable == false {
+			w.Write([]byte("error"))
+			return
+		}
+		buf := bytes.NewBuffer(make([]byte, 0, 0x140))
+		_, err = buf.Write(device.MSed[:])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.Header().Set("Content-Disposition", "inline; filename=\"movable.sed\"")
+		w.Write(buf.Bytes())
 	})
 	// POST /upload/id0 w/ file movable
 	router.HandleFunc("/upload/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
-		fmt.Println(id0)
-	})
+		file, header, err := r.FormFile("movable")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if header.Size != 0x120 && header.Size != 0x140 {
+			w.WriteHeader(400)
+			w.Write([]byte("error"))
+			fmt.Println(header.Size)
+			return
+		}
+		var x [0x120]byte
+		_, err = file.Read(x[:])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"msed": x, "hasmovable": true, "expirytime": time.Time{}}})
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		w.Write([]byte("success"))
+	}).Methods("POST")
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate("404error", make(jet.VarMap), r, w, nil)
 	})
 
-	fmt.Println("serving on :3000")
-	http.ListenAndServe(":3000", router)
+	// anti abuse task
+	ticker := time.NewTicker(5 * time.Minute)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				fmt.Println("running task")
+				query := devices.Find(bson.M{"expirytime": bson.M{"$ne": time.Time{}}})
+				var theDevices []Device
+				err := query.All(&theDevices)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				for _, device := range theDevices {
+					if (device.ExpiryTime != time.Time{} || device.ExpiryTime.Before(time.Now().Add(time.Hour)) == true) {
+						err = devices.Update(device, bson.M{"$set": bson.M{"expirytime": time.Time{}}})
+						if err != nil {
+							fmt.Println(err)
+							return
+						}
+						fmt.Println(device.ID0, "job has expired")
+					}
+				}
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
+
+	fmt.Println("serving on :80")
+	http.ListenAndServe(":80", router)
 }

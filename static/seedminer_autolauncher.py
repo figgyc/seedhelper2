@@ -27,7 +27,7 @@ def download_file(url, local_filename):
 
 
 print("Updating seedminer db...")
-
+os.system('"' + sys.executable + '" seedminer_launcher3.py update_db')
 
 #username = input("Username: ")
 #password = getpass.getpass("Password: ")
@@ -51,28 +51,30 @@ signal.signal(signal.SIGINT, signal_handler)
 while True:
     print("Finding work...")
     r = s.get(baseurl + "/getwork")
-    if r.text == "nowork":
+    if r.text == "nothing":
         print("No work. Waiting 30 seconds...")
         time.sleep(30)
     else:
         currentid = r.text
-        print("Downloading part1 for device " + currentid)
-        download_file(baseurl + '/part1/' + currentid, 'movable_part1.sed')
-        print("Bruteforcing")
-        os.system('"' + sys.executable + '" seedminer_launcher3.py gpu')
-        if os.path.isfile("movable.sed"):
-            print("Uploading")
-            # seedhelper2 has no msed database but we upload these anyway if zoogie wants them or smth idk
-            list_of_files = glob.glob('msed_data_*.bin') # * means all if need specific format then *.csv
-            latest_file = max(list_of_files, key=os.path.getctime)
-            ur = s.post(baseurl + '/upload/' + currentid, files={'movable': open('movable.sed', 'rb'), 'msed': open(latest_file, 'rb')})
-            if ur.text == "good":
-                print("Upload succeeded!")
-                os.remove("movable.sed")
-                os.remove(latest_file)
-            else:
-                print("Upload failed!")
-                sys.exit(1)
+        r2 = s.get(baseurl + "/claim/" + currentid)
+        if r2.text == "error":
+            print("Device already claimed, trying again...")
         else:
-            print("Failed!")
-            sys.exit(1)
+            print("Downloading part1 for device " + currentid)
+            download_file(baseurl + '/part1/' + currentid, 'movable_part1.sed')
+            print("Bruteforcing")
+            os.system('"' + sys.executable + '" seedminer_launcher3.py gpu')
+            if os.path.isfile("movable.sed"):
+                print("Uploading")
+                # seedhelper2 has no msed database but we upload these anyway if zoogie wants them or smth idk
+                list_of_files = glob.glob('msed_data_*.bin') # * means all if need specific format then *.csv
+                latest_file = max(list_of_files, key=os.path.getctime)
+                ur = s.post(baseurl + '/upload/' + currentid, files={'movable': open('movable.sed', 'rb'), 'msed': open(latest_file, 'rb')})
+                if ur.text == "good":
+                    print("Upload succeeded!")
+                    os.remove("movable.sed")
+                    os.remove(latest_file)
+                else:
+                    print("Upload failed!")
+                    sys.exit(1)
+
