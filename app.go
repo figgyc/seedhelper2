@@ -305,7 +305,7 @@ func main() {
 
 		fmt.Println(r, &r)
 
-		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"hasadded": "true"}})
+		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"hasadded": true}})
 		if err != nil && err != mgo.ErrNotFound {
 			w.Write([]byte("fail"))
 			log.Println("a", err)
