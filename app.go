@@ -2,19 +2,23 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha1"
+	"crypto/tls"
 	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 
 	"github.com/CloudyKit/jet"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"golang.org/x/crypto/acme/autocert"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -32,7 +36,7 @@ type Device struct {
 	HasPart1   bool
 	HasAdded   bool
 	WantsBF    bool
-	LFCS       [4]byte
+	LFCS       [8]byte
 	MSed       [0x140]byte
 	ExpiryTime time.Time `bson:",omitempty"`
 }
@@ -49,6 +53,25 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 	if err != nil {
 		panic(err)
 	}
+}
+
+func logger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Do stuff here
+		log.Println(r)
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(w, r)
+	})
+}
+
+func h2Pusher(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Do stuff here
+		//log.Println(r)
+		w.Header().Add("Link", "</static/js/script.js>; rel=preload; as=script, </logo.png>; rel=preload; as=icon, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.googleapis.com>; rel=preconnect, <https://bootswatch.com>; rel=preconnect, <https://cdn.jsdelivr.net>; rel=preconnect,")
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(w, r)
+	})
 }
 
 func main() {
@@ -70,8 +93,15 @@ func main() {
 
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
+	//router.Use(logger)
+	router.Use(h2Pusher)
+
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate("home", make(jet.VarMap), r, w, nil)
+	})
+
+	router.HandleFunc("/logo.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "logo.png")
 	})
 
 	// client:
@@ -100,52 +130,44 @@ func main() {
 				if err != nil {
 					log.Println(err)
 					//return
+					for k, v := range connections {
+						if v == conn {
+							delete(connections, k)
+						}
+					}
+					return
 				}
 				if object["id0"] == nil {
 					//return
 				}
 				fmt.Println(object, "packet")
-				isRegistered := false
+				/*isRegistered := false
 				for _, v := range connections {
 					if v == conn {
 						isRegistered = true
 					}
 				}
-				if isRegistered == false {
-					connections[object["id0"].(string)] = conn
-				}
+				if isRegistered == false {*/
+				connections[object["id0"].(string)] = conn
+				//}
 
 				if object["request"] == "bruteforce" {
 					// add to BF pool
-					query := devices.Find(bson.M{"_id": object["id0"].(string)})
-					count, err := query.Count()
+					err := devices.Update(bson.M{"_id": object["id0"].(string)}, bson.M{"$set": bson.M{"wantsbf": true, "expirytime": time.Time{}}})
 					if err != nil {
 						log.Println(err)
 						//return
 					}
-					if count > 1 {
-						var device Device
-						err = query.One(&device)
-						if err != nil {
-							log.Println(err)
-							//return
-						}
-						if device.HasPart1 == true {
-							change := mgo.Change{
-								Update: bson.M{"$set": bson.M{"wantsbf": true}},
-							}
-							_, err = query.Apply(change, &device)
-							if err != nil {
-								log.Println(err)
-								//return
-							}
-						}
-					} else {
-						//return
+				} else if object["request"] == "cancel" {
+					// canseru jobbu
+					err := devices.Remove(bson.M{"_id": object["id0"]})
+					if err != nil {
+						w.Write([]byte("error"))
+						return
 					}
 				} else if object["friendCode"] != nil {
 					// add to bot pool
-					// TODO: verify fc
+					// TODO: verify id0
 					/*
 						based on https://github.com/ihaveamac/Kurisu/blob/master/addons/friendcode.py#L24
 						    def verify_fc(self, fc):
@@ -172,12 +194,18 @@ func main() {
 					if int(sha1.Sum(pidb)[0])>>1 != checksum {
 						valid = false
 					}
+
+					if regexp.MustCompile("[0-9a-f]{32}").MatchString(object["id0"].(string)) == false {
+						valid = false
+					}
+
 					if valid == false {
 						msg := "{\"status\": \"friendCodeInvalid\"}"
 						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 							log.Println(err)
 							return
 						}
+						continue
 					}
 					device := Device{FriendCode: uint64(fc), ID0: object["id0"].(string)}
 					_, err = devices.Upsert(device, device)
@@ -227,7 +255,7 @@ func main() {
 							}
 						}
 					} else {
-						fmt.Println("hell")
+						fmt.Println("empty id0 to socket, dropped DB?")
 						//return
 					}
 				}
@@ -327,8 +355,12 @@ func main() {
 			log.Println(err)
 			return
 		}
-		var x [4]byte
+		var x [8]byte
 		copy(x[:], sliceLFCS)
+		x[0] = 0x00
+		x[1] = 0x00
+		x[2] = 0x00
+		fmt.Println(fc, a, b, lfcs, x, sliceLFCS)
 		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"haspart1": true, "lfcs": x}})
 		if err != nil && err != mgo.ErrNotFound {
 			log.Println(err)
@@ -370,7 +402,7 @@ func main() {
 	})
 	// /getwork
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
-		query := devices.Find(bson.M{"haspart1": true, "expirytime": bson.M{"$ne": time.Time{}}})
+		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}})
 		count, err := query.Count()
 		if err != nil || count < 1 {
 			w.Write([]byte("nothing"))
@@ -416,7 +448,7 @@ func main() {
 		}
 		buf := bytes.NewBuffer(make([]byte, 0, 0x1000))
 		leLFCS := make([]byte, 8)
-		binary.LittleEndian.PutUint32(leLFCS, binary.BigEndian.Uint32(device.LFCS[:]))
+		binary.LittleEndian.PutUint64(leLFCS, binary.BigEndian.Uint64(device.LFCS[:]))
 		_, err = buf.Write(leLFCS)
 		if err != nil {
 			w.Write([]byte("error"))
@@ -445,8 +477,31 @@ func main() {
 		w.Header().Set("Content-Disposition", "inline; filename=\"movable_part1.sed\"")
 		w.Write(buf.Bytes())
 	})
+	// /check/id0
+	// allows user cancel and not overshooting the 1hr job max time
+	router.HandleFunc("/check/{id0}", func(w http.ResponseWriter, r *http.Request) {
+		id0 := mux.Vars(r)["id0"]
+		query := devices.Find(bson.M{"_id": id0})
+		count, err := query.Count()
+		if err != nil || count < 1 {
+			w.Write([]byte("error"))
+			fmt.Println("z", err, count)
+			return
+		}
+		var device Device
+		err = query.One(&device)
+		if err != nil || device.HasPart1 == false {
+			w.Write([]byte("error"))
+			fmt.Println("a", err)
+			return
+		}
+		if device.WantsBF == false || device.ExpiryTime.Before(time.Now().Add(time.Hour)) == true {
+			w.Write([]byte("error"))
+			return
+		}
+		w.Write([]byte("ok"))
+	})
 	// /movable/id0
-	// this is also used by client if they want self BF so /claim is needed
 	router.HandleFunc("/movable/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
 		query := devices.Find(bson.M{"_id": id0})
@@ -491,10 +546,20 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"msed": x, "hasmovable": true, "expirytime": time.Time{}}})
+		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"msed": x, "hasmovable": true, "expirytime": time.Time{}, "wantsbf": false}})
 		if err != nil {
 			fmt.Println(err)
 			return
+		}
+
+		for key, conn := range connections {
+			if key == id0 {
+				msg := "{\"status\": \"done\"}"
+				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+					log.Println(err)
+					return
+				}
+			}
 		}
 
 		w.Write([]byte("success"))
@@ -521,10 +586,20 @@ func main() {
 				}
 				for _, device := range theDevices {
 					if (device.ExpiryTime != time.Time{} || device.ExpiryTime.Before(time.Now().Add(time.Hour)) == true) {
-						err = devices.Update(device, bson.M{"$set": bson.M{"expirytime": time.Time{}}})
+						err = devices.Update(device, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
 						if err != nil {
 							fmt.Println(err)
 							return
+						}
+
+						for id0, conn := range connections {
+							if id0 == device.ID0 {
+								msg := "{\"status\": \"flag\"}"
+								if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+									log.Println(err)
+									return
+								}
+							}
 						}
 						fmt.Println(device.ID0, "job has expired")
 					}
@@ -536,6 +611,29 @@ func main() {
 		}
 	}()
 
-	fmt.Println("serving on :80")
-	http.ListenAndServe(":80", router)
+	fmt.Println("serving on :80 and 443")
+	m := &autocert.Manager{
+		Prompt: func(tosurl string) bool {
+			fmt.Println(tosurl)
+			return true
+		},
+		HostPolicy: func(ctx context.Context, host string) error {
+			fmt.Println(host)
+			if host == "edge.figgyc.uk" {
+				return nil
+			}
+			return fmt.Errorf("acme/autocert: only edge.figgyc.uk host is allowed")
+		},
+		Cache: autocert.DirCache("."),
+	}
+	httpsSrv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Handler:      router,
+	}
+	httpsSrv.Addr = ":443"
+	httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
+	go httpsSrv.ListenAndServeTLS("", "")
+	http.ListenAndServe(":80", m.HTTPHandler(router))
 }

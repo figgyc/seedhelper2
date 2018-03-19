@@ -12,14 +12,16 @@
             color: lightgrey;
         }
     </style>
+    <meta name="theme-color" content="#2a9fd6" />
+    <link rel="icon" href="/logo.png" />
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary" style="border: none">
         <a class="navbar-brand" href="/">Seedhelper</a>
     </nav>
-
     {{yield body()}}
+    Seedhelper is developed by <a href="https://github.com/figgyc">figgyc</a> and is <a href="https://github.com/figgyc/seedhelper2">open source</a>
 </body>
 
 </html>

@@ -1,7 +1,6 @@
 {{extends "layout.jet"}} {{block body()}}
 <main class="container">
-    <script async src="/static/js/script.js"></script>
-    <h1>Seedhelper 2</h1>
+    <script async defer src="/static/js/script.js"></script>
     <div id="accordion">
         <div class="card">
             <div class="card-header" id="headingOne">
@@ -22,17 +21,17 @@
                     <form>
                         <div class="form-group">
                             <label for="friendCode">Friend code</label>
-                            <input required type="text" class="form-control" id="friendCode" placeholder="123456789012">
+                            <input required type="text" class="form-control" id="friendCode" maxlength="12" type="number" placeholder="123456789012">
                         </div>
                         <div class="form-group">
                             <label for="id0">ID0</label>
-                            <input required type="text" class="form-control" id="id0" placeholder="52f10c83610ebca1a059c0bae8255eb">
+                            <input required type="text" class="form-control" id="id0" maxlength="32" pattern="[a-fA-F0-9]{32}" placeholder="52f10c83610ebca1a059c0bae8255eb">
                         </div>
 
                         <button id="beginButton" class="btn btn-primary">Go</button>
 
                         <div id="fcError" class="alert alert-danger" role="alert" style="display: none;">
-                            Your Friend Code is incorrect. Type it correctly and without dashes.
+                            Your Friend Code or ID0 is incorrect. Type it correctly, the ID0 in lowercase and the Friend Code without dashes.
                         </div>
                         <div class="progress" id="fcProgress" style="display: none;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
@@ -52,8 +51,9 @@
             </div>
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-body">
-                    The friend code 0275-9929-0078 (Mii name figgyc) is connected to this website and will automatically retrieve your movable_part1
-                    when you add it back. Simply add it back and wait for it to process your friend code.
+                    The friend code 0275-9929-0078 (Mii name Figgy) is connected to this website and will automatically retrieve your movable_part1
+                    when you add it back. Simply add it back and wait for it to process your friend code. If nothing on this
+                    website changes after you add the bot, refresh the page.
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
                             aria-valuemax="100" style="width: 100%">Waiting...</div>
@@ -90,11 +90,16 @@
             </div>
             <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
                 <div class="card-body">
-                    Wait for the bruteforce to complete.
+                    Wait for the bruteforce to complete. While you wait, please check that your ID0 is correct and cancel the job if it is not,
+                    or you will be waiting forever!
+                    <br /> ID0:
+                    <span id="id0Fill"></span>
+                    <br />
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
                             aria-valuemax="100" style="width: 100%">Bruteforceing...</div>
                     </div>
+                    <button id="cancelButton" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
         </div>
@@ -178,7 +183,8 @@
                             <a href="static/bfcl.exe">no-pause bfcl.exe mod</a>
                         </li>
                         <li>Copy seedminer_autolauncher.py and bfcl.exe to the seedminer folder.</li>
-                        <li>Open an admin command prompt by opening Start, typing cmd and pressing Ctrl+Shift+Enter. Type "py -m pip install requests" without the quotes and press enter.</li>
+                        <li>Open an admin command prompt by opening Start, typing cmd and pressing Ctrl+Shift+Enter. Type "py
+                            -m pip install requests" without the quotes and press enter.</li>
                         <li>Shift+right click in the seedminer folder, press "Open command window here" and type "py seedminer_autolauncher.py"
                             to start working. Press Ctrl+C inside the command window to stop working.</li>
                     </ol>
