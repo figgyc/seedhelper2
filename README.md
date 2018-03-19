@@ -1,6 +1,6 @@
  # seedhelper2
 Rewrite of Seedhelper to fix issues.
-* Removes buggy msed database
+* Removes buggy msed database and sends msed to zoogie instead
 * Removes need for annoying login
 * **Bot that automatically finds part1 without humans (see http://github.com/figgyc/netseedhelper)**
 * Better UI with auto refresh using websockets, dark theme and integrated explanation

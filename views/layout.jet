@@ -21,7 +21,6 @@
         <a class="navbar-brand" href="/">Seedhelper</a>
     </nav>
     {{yield body()}}
-    Seedhelper is developed by <a href="https://github.com/figgyc">figgyc</a> and is <a href="https://github.com/figgyc/seedhelper2">open source</a>
 </body>
 
 </html>

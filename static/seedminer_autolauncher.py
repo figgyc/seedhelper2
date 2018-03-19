@@ -83,7 +83,7 @@ while True:
             #os.system('"' + sys.executable + '" seedminer_launcher3.py gpu')
             if os.path.isfile("movable.sed"):
                 print("Uploading")
-                # seedhelper2 has no msed database but we upload these anyway if zoogie wants them or smth idk
+                # seedhelper2 has no msed database but we upload these anyway so zoogie can have them
                 list_of_files = glob.glob('msed_data_*.bin') # * means all if need specific format then *.csv
                 latest_file = max(list_of_files, key=os.path.getctime)
                 ur = s.post(baseurl + '/upload/' + currentid, files={'movable': open('movable.sed', 'rb'), 'msed': open(latest_file, 'rb')})

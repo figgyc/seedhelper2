@@ -9,8 +9,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"time"
@@ -526,7 +528,7 @@ func main() {
 		w.Header().Set("Content-Disposition", "inline; filename=\"movable.sed\"")
 		w.Write(buf.Bytes())
 	})
-	// POST /upload/id0 w/ file movable
+	// POST /upload/id0 w/ file movable and msed
 	router.HandleFunc("/upload/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
 		file, header, err := r.FormFile("movable")
@@ -563,6 +565,36 @@ func main() {
 		}
 
 		w.Write([]byte("success"))
+
+		file2, header2, err := r.FormFile("msed")
+		if header2.Size != 12 {
+			fmt.Println(header.Size)
+			return
+		}
+		var msed [12]byte
+		_, err = file2.Read(msed[:])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(header2.Filename)
+		err = ioutil.WriteFile("static/mseds/"+header2.Filename, msed[:], 0644)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		f, err := os.OpenFile("static/mseds/list", os.O_APPEND|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer f.Close()
+		_, err = f.WriteString(header2.Filename + "\n")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
 	}).Methods("POST")
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

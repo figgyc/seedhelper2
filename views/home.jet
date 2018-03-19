@@ -192,5 +192,6 @@
             </div>
         </div>
     </div>
+    Seedhelper is developed by <a href="https://github.com/figgyc">figgyc</a> and is <a href="https://github.com/figgyc/seedhelper2">open source</a>
 </main>
 {{end}}
