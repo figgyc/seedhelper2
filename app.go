@@ -496,7 +496,7 @@ func main() {
 			fmt.Println("a", err)
 			return
 		}
-		if device.WantsBF == false || device.ExpiryTime.Before(time.Now().Add(time.Hour)) == true {
+		if device.WantsBF == false || device.ExpiryTime.Before(time.Now()) == true {
 			w.Write([]byte("error"))
 			return
 		}
@@ -616,7 +616,7 @@ func main() {
 					return
 				}
 				for _, device := range theDevices {
-					if (device.ExpiryTime != time.Time{} || device.ExpiryTime.Before(time.Now().Add(time.Hour)) == true) {
+					if (device.ExpiryTime != time.Time{} || device.ExpiryTime.Before(time.Now()) == true) {
 						err = devices.Update(device, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
 						if err != nil {
 							fmt.Println(err)
