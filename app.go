@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"crypto/sha1"
+	"crypto/tls"
 	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
@@ -642,7 +643,7 @@ func main() {
 	}()
 
 	fmt.Println("serving on :80 and 443")
-	/*m := &autocert.Manager{
+	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("edge.figgyc.uk", "seedhelper.figgyc.uk"),
 		Cache:      autocert.DirCache("."),
@@ -654,7 +655,8 @@ func main() {
 		Handler:      router,
 	}
 	httpsSrv.Addr = ":443"
-	httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}*/
-	go http.ListenAndServe(":80", router) //m.HTTPHandler(router))
-	http.Serve(autocert.NewListener("edge.figgyc.uk", "seedhelper.figgyc.uk"), router)
+	httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
+	//go http.ListenAndServe(":80", m.HTTPHandler(router))
+	//httpsSrv.ListenAndServeTLS("", "")
+	http.ListenAndServe(":80", router)
 }
