@@ -656,7 +656,6 @@ func main() {
 	}
 	httpsSrv.Addr = ":443"
 	httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
-	//go http.ListenAndServe(":80", m.HTTPHandler(router))
-	//httpsSrv.ListenAndServeTLS("", "")
-	http.ListenAndServe(":80", router)
+	go http.ListenAndServe(":80", m.HTTPHandler(router))
+	httpsSrv.ListenAndServeTLS("", "")
 }
