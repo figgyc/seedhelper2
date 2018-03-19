@@ -422,7 +422,7 @@ func main() {
 	router.HandleFunc("/claim/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
 		//fmt.Println(id0)
-		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now()}})
+		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now().Add(time.Hour)}})
 		if err != nil {
 			fmt.Println(err)
 			return
