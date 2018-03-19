@@ -619,10 +619,10 @@ func main() {
 		},
 		HostPolicy: func(ctx context.Context, host string) error {
 			fmt.Println(host)
-			if host == "edge.figgyc.uk" {
+			if host == "seedhelper.figgyc.uk" || host == "edge.figgyc.uk" {
 				return nil
 			}
-			return fmt.Errorf("acme/autocert: only edge.figgyc.uk host is allowed")
+			return fmt.Errorf("acme/autocert: only edge|seedhelper.figgyc.uk host is allowed")
 		},
 		Cache: autocert.DirCache("."),
 	}

@@ -1,6 +1,6 @@
 // hi! this script is what automatically recieves when things are finished.
 
-let socket = new WebSocket("wss://edge.figgyc.uk/socket")
+let socket = new WebSocket("wss://" + location.host + "/socket")
 
 socket.addEventListener("open", (e) => {
     if (localStorage.getItem("id0") != null) {
