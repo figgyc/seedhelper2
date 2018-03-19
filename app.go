@@ -2,9 +2,7 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"crypto/sha1"
-	"crypto/tls"
 	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
@@ -644,19 +642,10 @@ func main() {
 	}()
 
 	fmt.Println("serving on :80 and 443")
-	m := &autocert.Manager{
-		Prompt: func(tosurl string) bool {
-			fmt.Println(tosurl)
-			return true
-		},
-		HostPolicy: func(ctx context.Context, host string) error {
-			fmt.Println(host)
-			if host == "seedhelper.figgyc.uk" || host == "edge.figgyc.uk" {
-				return nil
-			}
-			return fmt.Errorf("acme/autocert: only edge|seedhelper.figgyc.uk host is allowed")
-		},
-		Cache: autocert.DirCache("."),
+	/*m := &autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("edge.figgyc.uk", "seedhelper.figgyc.uk"),
+		Cache:      autocert.DirCache("."),
 	}
 	httpsSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
@@ -665,7 +654,7 @@ func main() {
 		Handler:      router,
 	}
 	httpsSrv.Addr = ":443"
-	httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
-	go httpsSrv.ListenAndServeTLS("", "")
-	http.ListenAndServe(":80", m.HTTPHandler(router))
+	httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}*/
+	go http.ListenAndServe(":80", router) //m.HTTPHandler(router))
+	http.Serve(autocert.NewListener("edge.figgyc.uk", "seedhelper.figgyc.uk"), router)
 }
