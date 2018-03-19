@@ -12,7 +12,7 @@ import glob
 import subprocess
 
 s = requests.Session()
-baseurl = "http://edge.figgyc.uk"
+baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
 
 # https://stackoverflow.com/a/16696317 thx
