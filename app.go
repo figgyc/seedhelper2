@@ -208,7 +208,7 @@ func main() {
 						}
 						continue
 					}
-					device := Device{FriendCode: uint64(fc), ID0: object["id0"].(string)}
+					device := bson.M{"friendcode": uint64(fc), "_id": object["id0"].(string)}
 					_, err = devices.Upsert(device, device)
 					if err != nil {
 						log.Println(err)
@@ -306,7 +306,7 @@ func main() {
 		fmt.Println(r, &r)
 
 		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"hasadded": true}})
-		if err != nil && err != mgo.ErrNotFound {
+		if err != nil { // && err != mgo.ErrNotFound {
 			w.Write([]byte("fail"))
 			log.Println("a", err)
 			return
