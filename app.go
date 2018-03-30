@@ -349,6 +349,8 @@ func main() {
 
 		lfcs, ok := r.URL.Query()["lfcs"]
 		if ok == false {
+			log.Println("wot")
+			w.Write([]byte("fail"))
 			return
 		}
 
@@ -377,6 +379,7 @@ func main() {
 		if err != nil {
 			log.Println(err)
 			w.Write([]byte("fail"))
+			log.Println("las")
 			return
 		}
 		for id0, conn := range connections {
@@ -390,6 +393,7 @@ func main() {
 		}
 
 		w.Write([]byte("success"))
+		log.Println("last")
 
 	})
 
