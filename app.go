@@ -39,6 +39,7 @@ type Device struct {
 	WantsBF    bool
 	LFCS       [8]byte
 	MSed       [0x140]byte
+	MSData     [12]byte
 	ExpiryTime time.Time `bson:",omitempty"`
 }
 
@@ -94,7 +95,7 @@ func main() {
 
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	//router.Use(logger)
+	router.Use(logger)
 	router.Use(h2Pusher)
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -541,13 +542,13 @@ func main() {
 			fmt.Println(header.Size)
 			return
 		}
-		var x [0x120]byte
+		var movable [0x120]byte
 		_, err = file.Read(x[:])
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"msed": x, "hasmovable": true, "expirytime": time.Time{}, "wantsbf": false}})
+		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"msed": movable, "hasmovable": true, "expirytime": time.Time{}, "wantsbf": false}})
 		if err != nil {
 			fmt.Println(err)
 			return
