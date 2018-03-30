@@ -354,6 +354,7 @@ func main() {
 
 		sliceLFCS, err := hex.DecodeString(lfcs[0])
 		if err != nil {
+			w.Write([]byte("fail"))
 			log.Println(err)
 			return
 		}
@@ -365,6 +366,7 @@ func main() {
 		fmt.Println(fc, a, b, lfcs, x, sliceLFCS)
 		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"haspart1": true, "lfcs": x}})
 		if err != nil && err != mgo.ErrNotFound {
+			w.Write([]byte("fail"))
 			log.Println(err)
 			return
 		}
@@ -374,6 +376,7 @@ func main() {
 		err = query.One(&device)
 		if err != nil {
 			log.Println(err)
+			w.Write([]byte("fail"))
 			return
 		}
 		for id0, conn := range connections {
@@ -385,6 +388,8 @@ func main() {
 				}
 			}
 		}
+
+		w.Write([]byte("success"))
 
 	})
 
