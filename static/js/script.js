@@ -153,21 +153,22 @@ document.getElementById("p1file").addEventListener("change", (e) => {
         let file = fileInput.files[0]
         let fileReader = new FileReader()
         fileReader.readAsArrayBuffer(file)
-        while (fileReader.readyState != 2) {}
-        let arrayBuffer = fileReader.result
-        let lfcsBuffer = arrayBuffer.slice(0, 8)
-        document.getElementById("part1b64").value = base64ArrayBuffer(lfcsBuffer)
-        let id0Buffer = arrayBuffer.slice(0x10, 0x10+32)
-        let id0Array = new Uint8Array(id0Buffer)
-        document.getElementById("friendCode").disabled = true
-        document.getElementById("friendCode").value = "movable_part1 provided"
-        if (id0Array != new Uint8Array(32)) { // non blank, if id0 is injected with seedminer_helper
-            let textDecoder = new TextDecoder()
-            let id0String = textDecoder.decode(id0Array)
-            let id0Input = document.getElementById("id0")
-            id0Input.disabled = true
-            id0Input.value = id0String
-        }
+        filereader.addEventListener("loadend", () => {
+            let arrayBuffer = fileReader.result
+            let lfcsBuffer = arrayBuffer.slice(0, 8)
+            document.getElementById("part1b64").value = base64ArrayBuffer(lfcsBuffer)
+            let id0Buffer = arrayBuffer.slice(0x10, 0x10+32)
+            let id0Array = new Uint8Array(id0Buffer)
+            document.getElementById("friendCode").disabled = true
+            document.getElementById("friendCode").value = "movable_part1 provided"
+            if (id0Array != new Uint8Array(32)) { // non blank, if id0 is injected with seedminer_helper
+                let textDecoder = new TextDecoder()
+                let id0String = textDecoder.decode(id0Array)
+                let id0Input = document.getElementById("id0")
+                id0Input.disabled = true
+                id0Input.value = id0String
+            }
+        })
     }
 })
 /*
