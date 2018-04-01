@@ -150,20 +150,17 @@ document.getElementById("p1file").addEventListener("change", (e) => {
     let fileInput = e.target
     let fileList = fileInput.files
     if (fileList.length == 1 && fileList[0].size == 0x1000) {
-        console.log("a")
         let file = fileInput.files[0]
         let fileReader = new FileReader()
         fileReader.readAsArrayBuffer(file)
         while (fileReader.readyState != 2) {}
         let arrayBuffer = fileReader.result
-        console.log(arrayBuffer)
         document.getElementById("part1b64").value = base64ArrayBuffer(arrayBuffer)
         let id0Buffer = arrayBuffer.slice(0x10, 0x10+32)
         let id0Array = new Uint8Array(id0Buffer)
         document.getElementById("friendCode").disabled = true
         document.getElementById("friendCode").value = "movable_part1 provided"
         if (id0Array != new Uint8Array(32)) { // non blank, if id0 is injected with seedminer_helper
-            console.log("x")
             let textDecoder = new TextDecoder()
             let id0String = textDecoder.decode(id0Array)
             let id0Input = document.getElementById("id0")
@@ -183,7 +180,7 @@ document.getElementById("beginButton").addEventListener("click", (e) => {
     document.getElementById("fcError").style.display = "none"
     document.getElementById("beginButton").disabled = true
     localStorage.setItem("id0", document.getElementById("id0").value)
-    if (document.getElementById("friendCode").value == "part1 provided") {
+    if (document.getElementById("part1b64").value != "") {
         socket.send(JSON.stringify({
             part1: document.getElementById("part1b64").value,
             id0: document.getElementById("id0").value,
