@@ -143,7 +143,7 @@ func main() {
 				if object["id0"] == nil {
 					//return
 				}
-				fmt.Println(object, "packet")
+				fmt.Println(object["part1"], "packet")
 				/*isRegistered := false
 				for _, v := range connections {
 					if v == conn {
