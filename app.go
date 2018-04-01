@@ -71,7 +71,7 @@ func h2Pusher(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Do stuff here
 		//log.Println(r)
-		w.Header().Add("Link", "</static/js/script.js>; rel=preload; as=script, </logo.png>; rel=preload; as=icon, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.googleapis.com>; rel=preconnect, <https://bootswatch.com>; rel=preconnect, <https://cdn.jsdelivr.net>; rel=preconnect,")
+		w.Header().Add("Link", "</static/js/script.js>; rel=preload; as=script, </logo.png>; rel=preload; as=image, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.googleapis.com>; rel=preconnect, <https://bootswatch.com>; rel=preconnect, <https://cdn.jsdelivr.net>; rel=preconnect,")
 		// Call the next handler, which can be another middleware in the chain, or the final handler.
 		next.ServeHTTP(w, r)
 	})

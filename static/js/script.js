@@ -149,7 +149,7 @@ document.getElementById("uploadp1").addEventListener("click", (e) => {
 document.getElementById("p1file").addEventListener("change", (e) => {
     let fileInput = e.target
     let fileList = fileInput.files
-    if (fileList.length == 1 && fileList.files[0].length == 0x1000) {
+    if (fileList.length == 1 && fileList[0].length == 0x1000) {
         let file = fileInput.files[0]
         let fileReader = new FileReader()
         fileReader.readAsArrayBuffer(file)
