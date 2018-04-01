@@ -155,7 +155,8 @@ document.getElementById("p1file").addEventListener("change", (e) => {
         fileReader.readAsArrayBuffer(file)
         while (fileReader.readyState != 2) {}
         let arrayBuffer = fileReader.result
-        document.getElementById("part1b64").value = base64ArrayBuffer(arrayBuffer)
+        let lfcsBuffer = arrayBuffer.slice(8)
+        document.getElementById("part1b64").value = base64ArrayBuffer(lfcsBuffer)
         let id0Buffer = arrayBuffer.slice(0x10, 0x10+32)
         let id0Array = new Uint8Array(id0Buffer)
         document.getElementById("friendCode").disabled = true
