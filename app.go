@@ -190,7 +190,7 @@ func main() {
 					}
 					var lfcsArray [8]byte
 					copy(lfcsArray[:], p1Slice[:8])
-					device := bson.M{"part1": lfcsArray, "_id": object["id0"].(string)}
+					device := bson.M{"lfcs": lfcsArray, "_id": object["id0"].(string)}
 					_, err = devices.Upsert(device, device)
 					if err != nil {
 						log.Println(err)
