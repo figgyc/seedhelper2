@@ -190,7 +190,7 @@ func main() {
 					}
 					var lfcsArray [8]byte
 					copy(lfcsArray[:], p1Slice[:8])
-					device := bson.M{"lfcs": lfcsArray, "_id": object["id0"].(string)}
+					device := bson.M{"lfcs": lfcsArray, "_id": object["id0"].(string), "haspart1": true, "hasadded": true}
 					_, err = devices.Upsert(device, device)
 					if err != nil {
 						log.Println(err)
@@ -242,7 +242,7 @@ func main() {
 						}
 						continue
 					}
-					device := bson.M{"friendcode": uint64(fc), "_id": object["id0"].(string), "haspart1": true, "hasadded": true}
+					device := bson.M{"friendcode": uint64(fc), "_id": object["id0"].(string)}
 					_, err = devices.Upsert(device, device)
 					if err != nil {
 						log.Println(err)
