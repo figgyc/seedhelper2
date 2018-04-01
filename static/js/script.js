@@ -153,7 +153,7 @@ document.getElementById("p1file").addEventListener("change", (e) => {
         let file = fileInput.files[0]
         let fileReader = new FileReader()
         fileReader.readAsArrayBuffer(file)
-        filereader.addEventListener("loadend", () => {
+        fileReader.addEventListener("loadend", () => {
             let arrayBuffer = fileReader.result
             let lfcsBuffer = arrayBuffer.slice(0, 8)
             document.getElementById("part1b64").value = base64ArrayBuffer(lfcsBuffer)
