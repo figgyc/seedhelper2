@@ -141,7 +141,7 @@ socket.addEventListener("message", (e) => {
     uploadP1 a
     p1file input[type=file]
 */
-document.getElementById("uploadP1").addEventListener("click", (e) => {
+document.getElementById("uploadp1").addEventListener("click", (e) => {
     let fileInput = document.getElementById("p1file")    
     fileInput.click()
 })

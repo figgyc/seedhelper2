@@ -22,7 +22,7 @@
                         <div class="form-group">
                             <label for="friendCode">Friend code</label>
                             <input required type="text" class="form-control" id="friendCode" maxlength="12" type="number" placeholder="123456789012">
-                            <a id="uploadp1">or upload a movable_part1.sed</a>
+                            <a id="uploadp1" href="#">or upload a movable_part1.sed</a>
                             <input type="file" style="display: none" id="p1file" accept=".sed" />
                             <input type="hidden" id="part1b64" />
                         </div>
