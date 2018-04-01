@@ -387,6 +387,7 @@ func main() {
 				msg := "{\"status\": \"movablePart1\"}"
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 					log.Println(err)
+					w.Write([]byte("fail"))
 					return
 				}
 			}
@@ -552,7 +553,7 @@ func main() {
 			return
 		}
 		var movable [0x120]byte
-		_, err = file.Read(x[:])
+		_, err = file.Read(movable[:])
 		if err != nil {
 			fmt.Println(err)
 			return
