@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
@@ -167,9 +168,41 @@ func main() {
 						w.Write([]byte("error"))
 						return
 					}
+				} else if object["part1"] != nil {
+					// add to work pool
+					valid := true
+					if regexp.MustCompile("[0-9a-f]{32}").MatchString(object["id0"].(string)) == false {
+						valid = false
+					}
+
+					if valid == false {
+						msg := "{\"status\": \"friendCodeInvalid\"}"
+						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							log.Println(err)
+							return
+						}
+						continue
+					}
+					p1Slice, err := base64.StdEncoding.DecodeString(object["part1"].(string))
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					var lfcsArray [8]byte
+					copy(lfcsArray[:], p1Slice[:8])
+					device := bson.M{"part1": lfcsArray, "_id": object["id0"].(string)}
+					_, err = devices.Upsert(device, device)
+					if err != nil {
+						log.Println(err)
+						//return
+					}
+					msg := "{\"status\": \"movablePart1\"}"
+					if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+						log.Println(err)
+						//return
+					}
 				} else if object["friendCode"] != nil {
 					// add to bot pool
-					// TODO: verify id0
 					/*
 						based on https://github.com/ihaveamac/Kurisu/blob/master/addons/friendcode.py#L24
 						    def verify_fc(self, fc):
