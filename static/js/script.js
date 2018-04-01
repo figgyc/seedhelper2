@@ -112,3 +112,14 @@ document.getElementById("continue").addEventListener("click", (e) => {
     document.getElementById("collapseFour").classList.add("show")
     document.getElementById("id0Fill").innerText = localStorage.getItem("id0")
 })
+
+// anti queue clogging
+document.getElementById("disableButton").addEventListener("click", (e) => {
+    document.getElementById("continue").disabled = true
+    document.getElementById("disableMessage").style.display = "block"
+})
+
+document.getElementById("enableButton").addEventListener("click", (e) => {
+    document.getElementById("continue").disabled = false
+    document.getElementById("disableMessage").style.display = "none"
+})
