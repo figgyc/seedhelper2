@@ -508,7 +508,7 @@ func main() {
 		}
 		buf := bytes.NewBuffer(make([]byte, 0, 0x1000))
 		leLFCS := make([]byte, 8)
-		binary.LittleEndian.PutUint64(leLFCS, binary.BigEndian.Uint64(device.LFCS[:]))
+		binary.LittleEndian.PutUint64(leLFCS, binary.LittleEndian.Uint64(device.LFCS[:]))
 		_, err = buf.Write(leLFCS)
 		if err != nil {
 			w.Write([]byte("error"))
