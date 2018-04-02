@@ -77,6 +77,20 @@ func h2Pusher(next http.Handler) http.Handler {
 	})
 }
 
+func filetypeFixer(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Do stuff here
+		//log.Println(r)
+		var tFile = regexp.MustCompile("\\.py$")
+		if tFile.MatchString(r.RequestURI) {
+			w.Header().Set("Content-Type", "application/octet-stream")
+			w.Header().Set("Content-Disposition", "inline")
+		}
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	// initialize mongo
 	mgoSession, err := mgo.Dial("localhost")
@@ -98,6 +112,7 @@ func main() {
 
 	router.Use(logger)
 	router.Use(h2Pusher)
+	router.Use(filetypeFixer)
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate("home", make(jet.VarMap), r, w, nil)
