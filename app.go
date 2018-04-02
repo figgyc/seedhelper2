@@ -91,6 +91,12 @@ func filetypeFixer(next http.Handler) http.Handler {
 	})
 }
 
+func reverse(numbers []byte) {
+	for i, j := 0, len(numbers)-1; i < j; i, j = i+1, j-1 {
+		numbers[i], numbers[j] = numbers[j], numbers[i]
+	}
+}
+
 func main() {
 	// initialize mongo
 	mgoSession, err := mgo.Dial("localhost")
@@ -203,8 +209,10 @@ func main() {
 						log.Println(err)
 						return
 					}
+					lfcsSlice := p1Slice[:8]
+					reverse(lfcsSlice)
 					var lfcsArray [8]byte
-					copy(lfcsArray[:], p1Slice[:8])
+					copy(lfcsArray[:], lfcsSlice[:])
 					device := bson.M{"lfcs": lfcsArray, "_id": object["id0"].(string), "haspart1": true, "hasadded": true}
 					_, err = devices.Upsert(device, device)
 					if err != nil {

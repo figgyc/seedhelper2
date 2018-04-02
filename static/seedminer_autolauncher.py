@@ -79,7 +79,8 @@ while True:
                     r3 = s.get(baseurl + "/check/" + currentid)
                     if r3.text != "ok":
                         print("Job cancelled or expired, killing...")
-                        process.kill()
+                        # process.kill() broke
+                        subprocess.call(['taskkill', '/F', '/T', '/PID', str(process.pid)])
             #os.system('"' + sys.executable + '" seedminer_launcher3.py gpu')
             if os.path.isfile("movable.sed"):
                 print("Uploading")
