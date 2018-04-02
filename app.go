@@ -242,7 +242,7 @@ func main() {
 						}
 						continue
 					}
-					device := bson.M{"friendcode": uint64(fc), "_id": object["id0"].(string)}
+					device := bson.M{"friendcode": uint64(fc), "_id": object["id0"].(string), "hasadded": false, "haspart1": false}
 					_, err = devices.Upsert(device, device)
 					if err != nil {
 						log.Println(err)
