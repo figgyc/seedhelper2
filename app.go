@@ -325,6 +325,8 @@ func main() {
 	// part1 auto script:
 	// /getfcs
 	router.HandleFunc("/getfcs", func(w http.ResponseWriter, r *http.Request) {
+		lastBotInteraction = time.Now()
+
 		query := devices.Find(bson.M{"hasadded": false})
 		count, err := query.Count()
 		if err != nil || count < 1 {
@@ -341,7 +343,6 @@ func main() {
 			w.Write([]byte(strconv.FormatUint(device.FriendCode, 10)))
 			w.Write([]byte("\n"))
 		}
-		lastBotInteraction = time.Now()
 		return
 	})
 	// /added/fc
