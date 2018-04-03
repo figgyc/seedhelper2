@@ -31,6 +31,7 @@
                             <input required type="text" class="form-control" id="id0" maxlength="32" pattern="[a-fA-F0-9]{32}" placeholder="52f10c83610ebca1a059c0bae8255eb">
                         </div>
                         {{ isUp }}
+                        {{ time }}
                         {{ if isUp == false }}
                         <p style="color:red">Seedhelper seems to be having issues. You may be stuck waiting for a while until the issue is fixed!</p>
                         {{end}}
