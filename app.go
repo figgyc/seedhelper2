@@ -656,7 +656,7 @@ func main() {
 			return
 		}
 		defer f.Close()
-		_, err = f.WriteString(header2.Filename + "\n")
+		_, err = f.WriteString(filename + "\n")
 		if err != nil {
 			fmt.Println(err)
 			return
