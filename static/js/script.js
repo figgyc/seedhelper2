@@ -196,20 +196,6 @@ document.getElementById("beginButton").addEventListener("click", (e) => {
 })
 
 /*
-    cancel task
-*/
-document.getElementById("cancelButton").addEventListener("click", (e) => {
-    e.preventDefault()
-    document.getElementById("cancelButton").disabled = true
-    socket.send(JSON.stringify({
-        request: "cancel",
-        id0: document.getElementById("id0").value,
-    }))
-    document.getElementById("collapseFour").classList.remove("show")
-    document.getElementById("collapseOne").classList.add("show")
-})
-
-/*
     Step 4: wait for BF
     continue button
 */
@@ -234,4 +220,18 @@ document.getElementById("disableButton").addEventListener("click", (e) => {
 document.getElementById("enableButton").addEventListener("click", (e) => {
     document.getElementById("continue").disabled = false
     document.getElementById("disableMessage").style.display = "none"
+})
+
+/*
+    cancel task
+*/
+document.getElementById("cancelButton").addEventListener("click", (e) => {
+    e.preventDefault()
+    document.getElementById("cancelButton").disabled = true
+    socket.send(JSON.stringify({
+        request: "cancel",
+        id0: document.getElementById("id0").value,
+    }))
+    document.getElementById("collapseFour").classList.remove("show")
+    document.getElementById("collapseOne").classList.add("show")
 })
