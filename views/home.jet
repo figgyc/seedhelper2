@@ -1,6 +1,5 @@
 {{extends "layout.jet"}} {{block body()}}
 <main class="container">
-    <script async defer src="/static/js/script.js"></script>
     <div id="accordion">
         <div class="card">
             <div class="card-header" id="headingOne">
@@ -78,8 +77,8 @@
             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                 <div class="card-body">
                     If you have your own GPU, then
-                    <a href="#" id="downloadPart1">download movable_part1.sed</a> and bruteforce the movable.sed yourself (use
-                    <a href="https://jisagi.github.io/SeedminerGuide/seedminerSelf.html#section2" id="disableButton">this guide</a>). <!--Otherwise, press Continue if you need someone else to bruteforce it.-->
+                    <a href="#" id="downloadPart1" id="disableButton">download movable_part1.sed</a> and bruteforce the movable.sed yourself (use
+                    <a href="https://jisagi.github.io/SeedminerGuide/seedminerSelf.html#section2">this guide</a>). <!--Otherwise, press Continue if you need someone else to bruteforce it.-->
                     <button id="continue" class="btn btn-primary">Continue</button> <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
                     <!-- <p style="color: red">The bruteforce client is currently disabled while the rest of the service is disabled. Ask elsewhere, such as Discord or GBATemp, for a friend to bruteforce if you need it.</p> -->
                     <p id="disableMessage" style="display: none;">If you are bruteforceing with your own GPU, you don't need to press this button! If you downloaded your part1 on accident or for another reason, click <a id="enableButton">here</a> to turn it on again.</p>
@@ -201,4 +200,5 @@
     </div>
     Seedhelper is developed by <a href="https://github.com/figgyc">figgyc</a> and is <a href="https://github.com/figgyc/seedhelper2">open source</a>
 </main>
+<script defer src="/static/js/script.js"></script>
 {{end}}
