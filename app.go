@@ -644,7 +644,8 @@ func main() {
 			return
 		}
 		fmt.Println(header2.Filename)
-		err = ioutil.WriteFile("static/mseds/"+header2.Filename, msed[:], 0644)
+		filename := "msed_data_" + id0 + ".bin"
+		err = ioutil.WriteFile("static/mseds/"+filename, msed[:], 0644)
 		if err != nil {
 			fmt.Println(err)
 			return
