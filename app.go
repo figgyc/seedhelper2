@@ -28,6 +28,7 @@ import (
 var view *jet.Set
 var mgoSession mgo.Session
 var devices *mgo.Collection
+var lastBotInteraction time.Time
 var connections map[string]*websocket.Conn
 
 // Device : struct for devices
@@ -49,6 +50,7 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 	if err != nil {
 		panic(err)
 	}
+	vars.Set("isUp", (lastBotInteraction.After(time.Now().Add(time.Minute * -5))))
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template
 		panic(err)
@@ -331,7 +333,7 @@ func main() {
 	// part1 auto script:
 	// /getfcs
 	router.HandleFunc("/getfcs", func(w http.ResponseWriter, r *http.Request) {
-		query := devices.Find(bson.M{"haspart1": false, "hasadded": false})
+		query := devices.Find(bson.M{"hasadded": false})
 		count, err := query.Count()
 		if err != nil || count < 1 {
 			w.Write([]byte("nothing"))
@@ -347,6 +349,7 @@ func main() {
 			w.Write([]byte(strconv.FormatUint(device.FriendCode, 10)))
 			w.Write([]byte("\n"))
 		}
+		lastBotInteraction = time.Now()
 		return
 	})
 	// /added/fc
@@ -362,7 +365,7 @@ func main() {
 
 		fmt.Println(r, &r)
 
-		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"hasadded": true}})
+		err = devices.Update(bson.M{"friendcode": fc, "haspart1": false}, bson.M{"$set": bson.M{"hasadded": true}})
 		if err != nil { // && err != mgo.ErrNotFound {
 			w.Write([]byte("fail"))
 			log.Println("a", err)
@@ -378,12 +381,14 @@ func main() {
 			return
 		}
 		for id0, conn := range connections {
-			fmt.Println(id0, device.ID0, "hello!")
+			//fmt.Println(id0, device.ID0, "hello!")
 			if id0 == device.ID0 {
 				msg := "{\"status\": \"friendCodeAdded\"}"
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+					delete(connections, id0)
+					//w.Write([]byte("fail"))
 					log.Println(err)
-					return
+					//return
 				}
 			}
 		}
@@ -443,8 +448,9 @@ func main() {
 				msg := "{\"status\": \"movablePart1\"}"
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 					log.Println(err)
-					w.Write([]byte("fail"))
-					return
+					delete(connections, id0)
+					//w.Write([]byte("fail"))
+					//return
 				}
 			}
 		}
@@ -625,7 +631,9 @@ func main() {
 				msg := "{\"status\": \"done\"}"
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 					log.Println(err)
-					return
+					delete(connections, id0)
+					//w.Write([]byte("fail"))
+					//return
 				}
 			}
 		}
@@ -695,6 +703,7 @@ func main() {
 								msg := "{\"status\": \"flag\"}"
 								if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 									log.Println(err)
+									delete(connections, id0)
 									return
 								}
 							}
