@@ -365,7 +365,7 @@ func main() {
 
 		fmt.Println(r, &r)
 
-		err = devices.Update(bson.M{"friendcode": fc, "haspart1": false}, bson.M{"$set": bson.M{"hasadded": true}})
+		err = devices.Update(bson.M{"friendcode": fc, "hasadded": false}, bson.M{"$set": bson.M{"hasadded": true}})
 		if err != nil { // && err != mgo.ErrNotFound {
 			w.Write([]byte("fail"))
 			log.Println("a", err)
@@ -427,7 +427,7 @@ func main() {
 		x[1] = 0x00
 		x[2] = 0x00
 		fmt.Println(fc, a, b, lfcs, x, sliceLFCS)
-		err = devices.Update(bson.M{"friendcode": fc}, bson.M{"$set": bson.M{"haspart1": true, "lfcs": x}})
+		err = devices.Update(bson.M{"friendcode": fc, "haspart1": false}, bson.M{"$set": bson.M{"haspart1": true, "lfcs": x}})
 		if err != nil && err != mgo.ErrNotFound {
 			w.Write([]byte("fail"))
 			log.Println(err)
