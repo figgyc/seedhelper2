@@ -14,8 +14,8 @@
                 <div class="card-body">
                     Welcome to Seedhelper 2! This service is supported by the people who run the bruteforce script; see the bottom of this page
                     for more info on that. The seedminer method has some prerequisites: follow the first page of
-                    <a href="https://jisagi.github.io/SeedminerGuide/">this guide</a> before using this service. To use this service, type your Friend Code
-                    <b>without dashes</b> and your id0 in the box below. Your id0 is the random-looking name of the folder inside
+                    <a href="https://jisagi.github.io/SeedminerGuide/">this guide</a> before using this service. To use this service, <b>type your Friend Code
+                    <i>without dashes</i> and your id0 in the box below.</b> Your id0 is the random-looking name of the folder inside
                     the Nintendo 3DS folder on your SD card.
                     <form>
                         <div class="form-group">
@@ -55,7 +55,7 @@
             </div>
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-body">
-                    The friend code 0275-9929-0078 (Mii name Figgy) is connected to this website and will automatically retrieve your movable_part1
+                    <b>Add the friend code 0275-9929-0078.</b> It is connected to this website and will automatically retrieve your movable_part1
                     when you add it back. Simply add it back and wait for it to process your friend code. If nothing on this
                     website changes after you add the bot, refresh the page.
                     <div class="progress">
@@ -76,9 +76,9 @@
             </div>
             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                 <div class="card-body">
-                    If you have your own GPU, then
+                    <b>If you have your own GPU</b>, then
                     <a href="#" id="downloadPart1" class="disableButton">download movable_part1.sed</a> and bruteforce the movable.sed yourself (use
-                    <a href="https://jisagi.github.io/SeedminerGuide/seedminerSelf.html#section2">this guide</a>). <!--Otherwise, press Continue if you need someone else to bruteforce it.-->
+                    <a href="https://jisagi.github.io/SeedminerGuide/seedminerSelf.html#section2">this guide</a>). Otherwise, <b>press Continue</b> if you need someone else to bruteforce it.
                     <button id="continue" class="btn btn-primary">Continue</button> <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
                     <!-- <p style="color: red">The bruteforce client is currently disabled while the rest of the service is disabled. Ask elsewhere, such as Discord or GBATemp, for a friend to bruteforce if you need it.</p> -->
                     <p id="disableMessage" style="display: none;">If you are bruteforceing with your own GPU, you don't need to press this button! If you downloaded your part1 on accident or for another reason, click <a id="enableButton">here</a> to turn it on again.</p>
@@ -96,7 +96,7 @@
             </div>
             <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
                 <div class="card-body">
-                    Wait for the bruteforce to complete. While you wait, please check that your ID0 is correct and cancel the job if it is not,
+                    <b>Wait</b> for the bruteforce to complete. While you wait, please check that your ID0 is correct and cancel the job if it is not,
                     or you will be waiting forever!
                     <br /> ID0:
                     <span id="id0Fill"></span>
@@ -121,37 +121,6 @@
             <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
                 <div class="card-body">
                     <a href="#" id="downloadMovable">Download movable.sed</a> and inject your DSiWare.
-                    <!--
-                        // i'm not sure if seedplanter is prod ready yet. when it is it will probably replace tadpole in jisagi guide anyway
-                    There are many ways to do this but I recommend you use
-                    <a href="https://github.com/knight-ryu12/Seedplanter/releases">Seedplanter</a>. Here's how:
-                    <ol>
-                        <li>Download and install
-                            <a href="http://www.oracle.com/technetwork/java/javase/downloads/jre9-downloads-3848532.html">Java</a>
-                        </li>
-                        <li>Download
-                            <a href="https://3ds.hacks.guide/installing-boot9strap-(dsiware-game-injection)">an injection zip for your reason (scroll to "The sudokuhax injection .zip corresponding to your
-                                region")
-                            </a>
-                        </li>
-                        <li>Download
-                            <a href="https://github.com/knight-ryu12/Seedplanter/releases">Seedplanter</a>
-                        </li>
-                        <li>Find ctcert.bin (can't tell you how!)</li>
-                        <li>Open Seedplanter.jar and browse for the injection zip, ctcert.bin and the movable.sed</li>
-                        <li>Power on your 3DS and open System Settings</li>
-                        <li>Open Data Management, DSiWare and System Memory</li>
-                        <li>Select the game you want to hack, press Copy and press Yes</li>
-                        <li>Exit System Settings and power off your 3DS</li>
-                        <li>Put your 3DS's SD card into your computer</li>
-                        <li>Browse for the DSiWare which is on your 3DS's SD card in the Nintendo 3DS/[id0]/[id1]/Nintendo DSiWare/something.bin
-                            file
-                        </li>
-                        <li>Press inject</li>
-                        <li>Put the SD card back into your 3DS and turn it on</li>
-                        <li>Follow
-                            <a href="https://marenthyu.github.io/3dsSeedMinerGuide/DIS.html">this</a> from Section Three onwards.</li>
-                    </ol>-->
                     <a href="https://jisagi.github.io/SeedminerGuide/dsiwareInjection.html">Follow this guide to do that.</a>
                     Thanks to the people who run the bruteforcing script who make this service possible!
                     <br>
