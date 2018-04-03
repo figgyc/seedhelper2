@@ -1,5 +1,9 @@
 {{extends "layout.jet"}} {{block body()}}
 <main class="container">
+    {{ if isUp == false }}
+    <p style="color:red">Seedhelper seems to be having issues. You may be stuck waiting for a while until the issue is fixed!</p>
+    {{end}}
+    <button onclick="localStorage.clear(); location.reload()" class="btn">Start again</button>
     <div id="accordion">
         <div class="card">
             <div class="card-header" id="headingOne">
@@ -14,9 +18,10 @@
                 <div class="card-body">
                     Welcome to Seedhelper 2! This service is supported by the people who run the bruteforce script; see the bottom of this page
                     for more info on that. The seedminer method has some prerequisites: follow the first page of
-                    <a href="https://jisagi.github.io/SeedminerGuide/">this guide</a> before using this service. To use this service, <b>type your Friend Code
-                    <i>without dashes</i> and your id0 in the box below.</b> Your id0 is the random-looking name of the folder inside
-                    the Nintendo 3DS folder on your SD card.
+                    <a href="https://jisagi.github.io/SeedminerGuide/">this guide</a> before using this service. To use this service,
+                    <b>type your Friend Code
+                        <i>without dashes</i> and your id0 in the box below.</b> Your id0 is the random-looking name of the
+                    folder inside the Nintendo 3DS folder on your SD card.
                     <form>
                         <div class="form-group">
                             <label for="friendCode">Friend code</label>
@@ -29,9 +34,7 @@
                             <label for="id0">ID0</label>
                             <input required type="text" class="form-control" id="id0" maxlength="32" pattern="[a-fA-F0-9]{32}" placeholder="52f10c83610ebca1a059c0bae8255eb">
                         </div>
-                        {{ if isUp == false }}
-                        <p style="color:red">Seedhelper seems to be having issues. You may be stuck waiting for a while until the issue is fixed!</p>
-                        {{end}}
+
                         <button id="beginButton" class="btn btn-primary">Go</button>
 
                         <div id="fcError" class="alert alert-danger" role="alert" style="display: none;">
@@ -55,9 +58,9 @@
             </div>
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-body">
-                    <b>Add the friend code 0275-9929-0078.</b> It is connected to this website and will automatically retrieve your movable_part1
-                    when you add it back. Simply add it back and wait for it to process your friend code. If nothing on this
-                    website changes after you add the bot, refresh the page.
+                    <b>Add the friend code 0275-9929-0078.</b> It is connected to this website and will automatically retrieve
+                    your movable_part1 when you add it back. Simply add it back and wait for it to process your friend code.
+                    If nothing on this website changes after you add the bot, refresh the page.
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
                             aria-valuemax="100" style="width: 100%">Waiting...</div>
@@ -78,10 +81,14 @@
                 <div class="card-body">
                     <b>If you have your own GPU</b>, then
                     <a href="#" id="downloadPart1" class="disableButton">download movable_part1.sed</a> and bruteforce the movable.sed yourself (use
-                    <a href="https://jisagi.github.io/SeedminerGuide/seedminerSelf.html#section2">this guide</a>). Otherwise, <b>press Continue</b> if you need someone else to bruteforce it.
-                    <button id="continue" class="btn btn-primary">Continue</button> <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
+                    <a href="https://jisagi.github.io/SeedminerGuide/seedminerSelf.html#section2">this guide</a>). Otherwise,
+                    <b>press Continue</b> if you need someone else to bruteforce it.
+                    <button id="continue" class="btn btn-primary">Continue</button>
+                    <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
                     <!-- <p style="color: red">The bruteforce client is currently disabled while the rest of the service is disabled. Ask elsewhere, such as Discord or GBATemp, for a friend to bruteforce if you need it.</p> -->
-                    <p id="disableMessage" style="display: none;">If you are bruteforceing with your own GPU, you don't need to press this button! If you downloaded your part1 on accident or for another reason, click <a id="enableButton">here</a> to turn it on again.</p>
+                    <p id="disableMessage" style="display: none;">If you are bruteforceing with your own GPU, you don't need to press this button! If you downloaded your
+                        part1 on accident or for another reason, click
+                        <a id="enableButton">here</a> to turn it on again.</p>
                 </div>
             </div>
         </div>
@@ -96,8 +103,8 @@
             </div>
             <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
                 <div class="card-body">
-                    <b>Wait</b> for the bruteforce to complete. While you wait, please check that your ID0 is correct and cancel the job if it is not,
-                    or you will be waiting forever!
+                    <b>Wait</b> for the bruteforce to complete. While you wait, please check that your ID0 is correct and cancel
+                    the job if it is not, or you will be waiting forever!
                     <br /> ID0:
                     <span id="id0Fill"></span>
                     <br />
@@ -167,7 +174,8 @@
             </div>
         </div>
     </div>
-    Seedhelper is developed by <a href="https://github.com/figgyc">figgyc</a> and is <a href="https://github.com/figgyc/seedhelper2">open source</a>
+    Seedhelper is developed by
+    <a href="https://github.com/figgyc">figgyc</a> and is
+    <a href="https://github.com/figgyc/seedhelper2">open source</a>
 </main>
-<script defer src="/static/js/script.js"></script>
-{{end}}
+<script defer src="/static/js/script.js"></script> {{end}}
