@@ -212,7 +212,7 @@ document.getElementById("continue").addEventListener("click", (e) => {
 })
 
 // anti queue clogging
-document.getElementById("disableButton").addEventListener("click", (e) => {
+document.querySelector(".disableButton").addEventListener("click", (e) => {
     document.getElementById("continue").disabled = true
     document.getElementById("disableMessage").style.display = "block"
 })
