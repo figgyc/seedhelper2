@@ -46,6 +46,7 @@ type Device struct {
 }
 
 func renderTemplate(template string, vars jet.VarMap, request *http.Request, writer http.ResponseWriter, context interface{}) {
+	writer.Header().Add("Link", "</static/js/script.js>; rel=preload; as=script, </logo.png>; rel=preload; as=image, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.googleapis.com>; rel=preconnect, <https://bootswatch.com>; rel=preconnect, <https://cdn.jsdelivr.net>; rel=preconnect,")
 	t, err := view.GetTemplate(template)
 	if err != nil {
 		panic(err)
@@ -64,16 +65,6 @@ func logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Do stuff here
 		log.Println(r)
-		// Call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(w, r)
-	})
-}
-
-func h2Pusher(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Do stuff here
-		//log.Println(r)
-		w.Header().Add("Link", "</static/js/script.js>; rel=preload; as=script, </logo.png>; rel=preload; as=image, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.googleapis.com>; rel=preconnect, <https://bootswatch.com>; rel=preconnect, <https://cdn.jsdelivr.net>; rel=preconnect,")
 		// Call the next handler, which can be another middleware in the chain, or the final handler.
 		next.ServeHTTP(w, r)
 	})
@@ -100,6 +91,7 @@ func reverse(numbers []byte) {
 }
 
 func main() {
+	lastBotInteraction = time.Now()
 	// initialize mongo
 	mgoSession, err := mgo.Dial("localhost")
 	if err != nil {
@@ -119,7 +111,6 @@ func main() {
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	router.Use(logger)
-	router.Use(h2Pusher)
 	router.Use(filetypeFixer)
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
