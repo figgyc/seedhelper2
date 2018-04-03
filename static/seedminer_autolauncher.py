@@ -14,6 +14,7 @@ import subprocess
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
+currentVersion = "1.0"
 
 # https://stackoverflow.com/a/16696317 thx
 def download_file(url, local_filename):
@@ -26,6 +27,13 @@ def download_file(url, local_filename):
                 #f.flush() commented by recommendation from J.F.Sebastian
     return local_filename
 
+
+print("Checking for updates...")
+r0 = s.get(baseurl + "/static/autolauncher_version")
+if r0.text != currentVersion:
+    print("Updating")
+    download_file(baseurl + "/static/seedminer_autolauncher.py", "seedminer_autolauncher.py")
+    os.system('"' + sys.executable + '" seedminer_autolauncher.py')
 
 print("Updating seedminer db...")
 os.system('"' + sys.executable + '" seedminer_launcher3.py update-db')
@@ -80,7 +88,7 @@ while True:
                     if r3.text != "ok":
                         print("Job cancelled or expired, killing...")
                         # process.kill() broke
-                        subprocess.call(['taskkill', '/F', '/T', '/PID', str(process.pid)])
+                        subprocess.call(['taskkill', '/F', '/T', '/IM', 'bfcl.exe'])
             #os.system('"' + sys.executable + '" seedminer_launcher3.py gpu')
             if os.path.isfile("movable.sed"):
                 print("Uploading")
