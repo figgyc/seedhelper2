@@ -292,6 +292,12 @@ func main() {
 								log.Println(err)
 								//return
 							}
+						} else if (device.ExpiryTime != time.Time{}) {
+							msg := "{\"status\": \"bruteforcing\"}"
+							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+								log.Println(err)
+								//return
+							}
 						} else if device.HasPart1 == true {
 							msg := "{\"status\": \"movablePart1\"}"
 							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
