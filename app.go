@@ -55,6 +55,11 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 	}
 	vars.Set("isUp", (lastBotInteraction.After(time.Now().Add(time.Minute * -5))))
 	vars.Set("minerCount", len(miners))
+	c, err := devices.Find(bson.M{"expirytime": bson.M{"$ne": time.Time{}}}).Count()
+	if err != nil {
+		panic(err)
+	}
+	vars.Set("userCount", c)
 	fmt.Println(miners, len(miners))
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template
