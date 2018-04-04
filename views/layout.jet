@@ -19,7 +19,7 @@
 <body>
     <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary" style="border: none">
         <a class="navbar-brand" href="/">Seedhelper</a>
-        <span class="nav-item ml-auto">{{yield status()}}</span>
+        <span class="navbar-text ml-auto">{{yield status()}}</span>
     </nav>
     {{yield body()}}
 </body>
