@@ -81,6 +81,9 @@ socket.addEventListener("open", (e) => {
     }
 })
 
+socket.addEventListener("close", () => {alert("The socket was closed, refresh the page.")})
+socket.addEventListener("error", () => {alert("The socket was closed, refresh the page.")})
+
 socket.addEventListener("message", (e) => {
     //console.log("hey!", e.data, JSON.parse(e.data).status)
     if (JSON.parse(e.data).status == "friendCodeAdded") {
