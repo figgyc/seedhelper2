@@ -60,7 +60,7 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 		panic(err)
 	}
 	vars.Set("userCount", c)
-	b, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$ne": time.Time{}}}).Count()
+	b, err := devices.Find(bson.M{"hasmovable": false, "haspart1": true, "wantsbf": true, "expirytime": bson.M{"$ne": time.Time{}}}).Count()
 	if err != nil {
 		panic(err)
 	}
