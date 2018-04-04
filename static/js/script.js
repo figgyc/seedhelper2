@@ -169,6 +169,11 @@ document.getElementById("p1file").addEventListener("change", (e) => {
         fileReader.addEventListener("loadend", () => {
             let arrayBuffer = fileReader.result
             let lfcsBuffer = arrayBuffer.slice(0, 8)
+            let lfcsArray = new Uint8Array(lfcsBuffer)
+            if (lfcsBuffer == new Uint8Array(32)) {
+                alert("part1 is invalid")
+                return
+            }
             document.getElementById("part1b64").value = base64ArrayBuffer(lfcsBuffer)
             let id0Buffer = arrayBuffer.slice(0x10, 0x10+32)
             let id0Array = new Uint8Array(id0Buffer)
