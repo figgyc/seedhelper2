@@ -1,10 +1,11 @@
-{{extends "layout.jet"}} {{block body()}}
+{{extends "layout.jet"}}
+{{block status()}}{{ minerCount }} miners are online, {{ userCount }} users are in the mining queue{{end}}
+{{block body()}}
 <main class="container">
     {{ if isUp == false }}
     <div class="alert alert-danger">Seedhelper seems to be having issues. You may be stuck waiting for a while until the issue is fixed!</p>
     {{end}}
     <div class="alert alert-info">If you have issues, ask for help on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a></div>
-    <div class="alert alert-info">{{ minerCount }} miners are online, {{ userCount }} users are in the mining queue</div>
     <button onclick="localStorage.clear(); location.reload()" class="btn">Start again</button>
     <div id="accordion">
         <div class="card">
