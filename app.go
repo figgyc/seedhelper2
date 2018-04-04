@@ -95,6 +95,7 @@ func reverse(numbers []byte) {
 
 func main() {
 	lastBotInteraction = time.Now()
+	miners = map[string]time.Time{}
 	// initialize mongo
 	mgoSession, err := mgo.Dial("localhost")
 	if err != nil {
