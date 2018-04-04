@@ -22,8 +22,7 @@
                     Welcome to Seedhelper 2! This service is supported by the people who run the bruteforce script; see the bottom of this page
                     for more info on that. The seedminer method has some prerequisites: follow the first page of
                     <a href="https://jisagi.github.io/SeedminerGuide/">this guide</a> before using this service. To use this service,
-                    <b>type your Friend Code
-                        <i>without dashes</i> and your id0 in the box below</b> or upload a movable_part1.sed if you already have it. Your id0 is the random-looking name of the
+                    <b>type your Friend Code and your id0 in the box below</b> or upload a movable_part1.sed if you already have it. Your id0 is the random-looking name of the
                     folder inside the Nintendo 3DS folder on your SD card.
                     <form>
                         <div class="form-group">
