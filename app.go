@@ -493,6 +493,19 @@ func main() {
 			return
 		}
 		w.Write([]byte("success"))
+
+		for id02, conn := range connections {
+			//fmt.Println(id0, device.ID0, "hello!")
+			if id02 == id0 {
+				msg := "{\"status\": \"bruteforcing\"}"
+				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+					delete(connections, id0)
+					//w.Write([]byte("fail"))
+					log.Println(err)
+					//return
+				}
+			}
+		}
 	})
 	// /part1/id0
 	// this is also used by client if they want self BF so /claim is needed

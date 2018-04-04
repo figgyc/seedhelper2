@@ -110,10 +110,10 @@
                     <span id="id0Fill"></span>
                     <br />
                     <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="bfProgress" aria-valuenow="100" aria-valuemin="0"
                             aria-valuemax="100" style="width: 100%">Bruteforceing...</div>
                     </div>
-                    <button id="cancelButton" class="btn btn-danger">Cancel</button>
+                    <button id="cancelButton" class="btn btn-danger">Cancel</button> If you cancel the bruteforce, you cannot queue it again and should ask elsewhere for a person to bruteforce it!
                 </div>
             </div>
         </div>

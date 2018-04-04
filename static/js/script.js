@@ -123,8 +123,7 @@ socket.addEventListener("message", (e) => {
     }
     if (JSON.parse(e.data).status == "flag") {
         /* 
-            Step 5: done! 
-            downloadMovable a
+            Step -1: flag
         */
         document.getElementById("collapseOne").classList.add("show")
         document.getElementById("collapseTwo").classList.remove("show")
@@ -133,6 +132,17 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFive").classList.remove("show")
         document.getElementById("fcError").style.display = "block"
         document.getElementById("fcError").innerText = "Your movable.sed took to long to bruteforce. This is most likely because your ID0 was incorrect. Please "
+    }
+    if (JSON.parse(e.data).status == "bruteforcing") {
+        /* 
+            Step 4.1
+        */
+        document.getElementById("collapseOne").classList.remove("show")
+        document.getElementById("collapseTwo").classList.remove("show")
+        document.getElementById("collapseThree").classList.remove("show")
+        document.getElementById("collapseFour").classList.add("show")
+        document.getElementById("collapseFive").classList.remove("show")
+        document.getElementById("bfProgress").classList.add("bg-warning")
     }
 })
 
@@ -228,6 +238,7 @@ document.getElementById("enableButton").addEventListener("click", (e) => {
 document.getElementById("cancelButton").addEventListener("click", (e) => {
     e.preventDefault()
     document.getElementById("cancelButton").disabled = true
+    document.getElementById("downloadPart1").click()
     socket.send(JSON.stringify({
         request: "cancel",
         id0: document.getElementById("id0").value,
