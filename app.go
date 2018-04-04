@@ -15,6 +15,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/CloudyKit/jet"
@@ -31,6 +32,9 @@ var mgoSession mgo.Session
 var devices *mgo.Collection
 var lastBotInteraction time.Time
 var miners map[string]time.Time
+var iminers map[string]time.Time
+var ipPriority []string
+var ipBlacklist []string
 var connections map[string]*websocket.Conn
 
 // Device : struct for devices
@@ -45,6 +49,15 @@ type Device struct {
 	MSed       [0x140]byte
 	MSData     [12]byte
 	ExpiryTime time.Time `bson:",omitempty"`
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
 
 func renderTemplate(template string, vars jet.VarMap, request *http.Request, writer http.ResponseWriter, context interface{}) {
@@ -107,6 +120,10 @@ func reverse(numbers []byte) {
 func main() {
 	lastBotInteraction = time.Now()
 	miners = map[string]time.Time{}
+	iminers = map[string]time.Time{}
+	ipBlacklist := strings.Split(os.Getenv("SEEDHELPER_IP_BLACKLIST"), ",")
+	ipPriority := strings.Split(os.Getenv("SEEDHELPER_IP_PRIORITY"), ",")
+	fmt.Println(ipBlacklist, ipPriority)
 	// initialize mongo
 	mgoSession, err := mgo.Dial("localhost")
 	if err != nil {
@@ -488,9 +505,11 @@ func main() {
 		w.Write([]byte("success"))
 
 	})
+	// : 86.15.167.38
 	// /getwork
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()
+		iminers[realip.FromRequest(r)] = time.Now()
 		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}})
 		count, err := query.Count()
 		if err != nil || count < 1 {
@@ -723,6 +742,11 @@ func main() {
 				for ip, miner := range miners {
 					if miner.Before(time.Now().Add(time.Minute*-5)) == true {
 						delete(miners, ip)
+					}
+				}
+				for ip, miner := range iminers {
+					if miner.Before(time.Now().Add(time.Second*-30)) == true {
+						delete(iminers, ip)
 					}
 				}
 				for _, device := range theDevices {
