@@ -29,6 +29,7 @@ var view *jet.Set
 var mgoSession mgo.Session
 var devices *mgo.Collection
 var lastBotInteraction time.Time
+var miners map[string]time.Time
 var connections map[string]*websocket.Conn
 
 // Device : struct for devices
@@ -46,12 +47,13 @@ type Device struct {
 }
 
 func renderTemplate(template string, vars jet.VarMap, request *http.Request, writer http.ResponseWriter, context interface{}) {
-	writer.Header().Add("Link", "</static/js/script.js>; rel=preload; as=script, </logo.png>; rel=preload; as=image, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.googleapis.com>; rel=preconnect, <https://bootswatch.com>; rel=preconnect, <https://cdn.jsdelivr.net>; rel=preconnect,")
+	writer.Header().Add("Link", "</static/js/script.js>; rel=preload; as=script, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.googleapis.com>; rel=preconnect, <https://bootswatch.com>; rel=preconnect, <https://cdn.jsdelivr.net>; rel=preconnect,")
 	t, err := view.GetTemplate(template)
 	if err != nil {
 		panic(err)
 	}
 	vars.Set("isUp", (lastBotInteraction.After(time.Now().Add(time.Minute * -5))))
+	vars.Set("minerCount", len(miners))
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template
 		panic(err)
@@ -500,7 +502,7 @@ func main() {
 			return
 		}
 		w.Write([]byte("success"))
-
+		miners[r.Host] = time.Now()
 		for id02, conn := range connections {
 			//fmt.Println(id0, device.ID0, "hello!")
 			if id02 == id0 {
@@ -702,6 +704,11 @@ func main() {
 				if err != nil {
 					fmt.Println(err)
 					return
+				}
+				for ip, miner := range miners {
+					if miner.Before(time.Now().Add(time.Minute*-5)) == true {
+						delete(miners, ip)
+					}
 				}
 				for _, device := range theDevices {
 					if (device.ExpiryTime != time.Time{} || device.ExpiryTime.Before(time.Now()) == true) {
