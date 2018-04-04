@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/CloudyKit/jet"
+	"github.com/Tomasen/realip"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"golang.org/x/crypto/acme/autocert"
@@ -479,7 +480,7 @@ func main() {
 	})
 	// /getwork
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
-		miners[r.Host] = time.Now()
+		miners[realip.FromRequest(r)] = time.Now()
 		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}})
 		count, err := query.Count()
 		if err != nil || count < 1 {
@@ -505,7 +506,7 @@ func main() {
 			return
 		}
 		w.Write([]byte("success"))
-		miners[r.Host] = time.Now()
+		miners[realip.FromRequest(r)] = time.Now()
 		for id02, conn := range connections {
 			//fmt.Println(id0, device.ID0, "hello!")
 			if id02 == id0 {
@@ -590,7 +591,7 @@ func main() {
 			w.Write([]byte("error"))
 			return
 		}
-		miners[r.Host] = time.Now()
+		miners[realip.FromRequest(r)] = time.Now()
 		w.Write([]byte("ok"))
 	})
 	// /movable/id0
