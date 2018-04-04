@@ -78,6 +78,21 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 		panic(err)
 	}
 	vars.Set("miningCount", b)
+	a, err := devices.Find(bson.M{"haspart1": true}).Count()
+	if err != nil {
+		panic(err)
+	}
+	vars.Set("p1Count", a)
+	z, err := devices.Find(bson.M{"hasmovable": true}).Count()
+	if err != nil {
+		panic(err)
+	}
+	vars.Set("msCount", z)
+	n, err := devices.Count()
+	if err != nil {
+		panic(err)
+	}
+	vars.Set("totalCount", n)
 	fmt.Println(miners, len(miners))
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template

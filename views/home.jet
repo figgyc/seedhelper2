@@ -1,5 +1,5 @@
 {{extends "layout.jet"}}
-{{block status()}}{{ minerCount }} miners are online, {{ userCount }} users are in the mining queue, {{ miningCount }} are being mined{{end}}
+{{block status()}}{{ minerCount }} miners are online, {{ userCount }} users are in the mining queue, {{ miningCount }} are being mined, {{ totalCount }} total users, {{ p1Count }} got part1, {{ msCount }} got movable{{end}}
 {{block body()}}
 <main class="container">
     {{ if isUp == false }}
