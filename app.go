@@ -556,7 +556,7 @@ func main() {
 		}
 		var device Device
 		err = query.One(&device)
-		if err != nil || device.HasPart1 == false {
+		if err != nil || device.HasPart1 == false || device.HasMovable == true {
 			w.Write([]byte("error"))
 			fmt.Println("a", err)
 			return
