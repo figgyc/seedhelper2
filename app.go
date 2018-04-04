@@ -54,6 +54,7 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 	}
 	vars.Set("isUp", (lastBotInteraction.After(time.Now().Add(time.Minute * -5))))
 	vars.Set("minerCount", len(miners))
+	fmt.Println(miners)
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template
 		panic(err)
@@ -587,6 +588,7 @@ func main() {
 			w.Write([]byte("error"))
 			return
 		}
+		miners[r.Host] = time.Now()
 		w.Write([]byte("ok"))
 	})
 	// /movable/id0
