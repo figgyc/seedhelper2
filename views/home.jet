@@ -22,7 +22,7 @@
                     for more info on that. The seedminer method has some prerequisites: follow the first page of
                     <a href="https://jisagi.github.io/SeedminerGuide/">this guide</a> before using this service. To use this service,
                     <b>type your Friend Code
-                        <i>without dashes</i> and your id0 in the box below.</b> Your id0 is the random-looking name of the
+                        <i>without dashes</i> and your id0 in the box below</b> or upload a movable_part1.sed if you already have it. Your id0 is the random-looking name of the
                     folder inside the Nintendo 3DS folder on your SD card.
                     <form>
                         <div class="form-group">
