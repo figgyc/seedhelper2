@@ -104,7 +104,7 @@
             </div>
             <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
                 <div class="card-body">
-                    <b>Wait</b> for the bruteforce to complete. While you wait, please check that your ID0 is correct and cancel
+                    <b>Wait</b> for the bruteforce to complete. Feel free to leave the website running in the background or even close it. While you wait, please check that your ID0 is correct and cancel
                     the job if it is not, or you will be waiting forever!
                     <br /> ID0:
                     <span id="id0Fill"></span>
@@ -113,7 +113,7 @@
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="bfProgress" aria-valuenow="100" aria-valuemin="0"
                             aria-valuemax="100" style="width: 100%">Bruteforceing...</div>
                     </div>
-                    <button id="cancelButton" class="btn btn-danger">Cancel</button> If you cancel the bruteforce, you cannot queue it again and should ask elsewhere for a person to bruteforce it!
+                    <button id="cancelButton" class="btn btn-danger">Cancel</button> If you cancel the bruteforce, you will have to restart the process!
                 </div>
             </div>
         </div>
