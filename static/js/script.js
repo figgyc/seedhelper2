@@ -134,7 +134,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFour").classList.remove("show")
         document.getElementById("collapseFive").classList.remove("show")
         document.getElementById("fcError").style.display = "block"
-        document.getElementById("fcError").innerText = "Your movable.sed took to long to bruteforce. This is most likely because your ID0 was incorrect. Please "
+        document.getElementById("fcError").innerText = "Your movable.sed took to long to bruteforce. This is most likely because your ID0 was incorrect. Please make sure it is correct by asking for help."
     }
     if (JSON.parse(e.data).status == "bruteforcing") {
         /* 
