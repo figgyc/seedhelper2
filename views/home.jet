@@ -20,8 +20,8 @@
             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
                     Welcome to Seedhelper 2! This service is supported by the people who run the bruteforce script; see the bottom of this page
-                    for more info on that. The seedminer method has some prerequisites: follow the first page of
-                    <a href="https://jisagi.github.io/SeedminerGuide/">this guide</a> before using this service. To use this service,
+                    for more info on that. You should be following
+                    <a href="https://jisagi.github.io/SeedminerGuide/">Jisagi's seedminer guide</a> to use this service. You may find it harder to get help if you aren't using this guide! To use this service,
                     <b>type your Friend Code and your id0 in the box below</b> or upload a movable_part1.sed if you already have it. Your id0 is the random-looking name of the
                     folder inside the Nintendo 3DS folder on your SD card.
                     <form>
@@ -82,8 +82,7 @@
             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                 <div class="card-body">
                     <b>If you have your own GPU</b>, then
-                    <a href="#" id="downloadPart1" class="disableButton">download movable_part1.sed</a> and bruteforce the movable.sed yourself (use
-                    <a href="https://jisagi.github.io/SeedminerGuide/seedminerSelf.html#section2">this guide</a>). Otherwise,
+                    <a href="#" id="downloadPart1" class="disableButton">download movable_part1.sed</a> and go back to the guide and bruteforce the movable.sed yourself. Otherwise,
                     <b>press Continue</b> if you need someone else to bruteforce it.
                     <button id="continue" class="btn btn-primary">Continue</button>
                     <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
@@ -129,8 +128,7 @@
             </div>
             <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
                 <div class="card-body">
-                    <a href="#" id="downloadMovable">Download movable.sed</a> and inject your DSiWare.
-                    <a href="https://jisagi.github.io/SeedminerGuide/dsiwareInjection.html">Follow this guide to do that.</a>
+                    <a href="#" id="downloadMovable">Download movable.sed</a> and go back to the guide to inject your DSiWare.
                     Thanks to the people who run the bruteforcing script who make this service possible!
                     <br>
                     <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
