@@ -35,6 +35,7 @@ var miners map[string]time.Time
 var iminers map[string]time.Time
 var ipPriority []string
 var ipBlacklist []string
+var botIP string
 var connections map[string]*websocket.Conn
 
 // Device : struct for devices
@@ -136,8 +137,9 @@ func main() {
 	lastBotInteraction = time.Now()
 	miners = map[string]time.Time{}
 	iminers = map[string]time.Time{}
-	ipBlacklist := strings.Split(os.Getenv("SEEDHELPER_IP_BLACKLIST"), ",")
-	ipPriority := strings.Split(os.Getenv("SEEDHELPER_IP_PRIORITY"), ",")
+	ipBlacklist = strings.Split(os.Getenv("SEEDHELPER_IP_BLACKLIST"), ",")
+	ipPriority = strings.Split(os.Getenv("SEEDHELPER_IP_PRIORITY"), ",")
+	botIP = os.Getenv("SEEDHELPER_BOT_IP")
 	fmt.Println(ipBlacklist, ipPriority)
 	// initialize mongo
 	mgoSession, err := mgo.Dial("localhost")
@@ -378,6 +380,10 @@ func main() {
 	// part1 auto script:
 	// /getfcs
 	router.HandleFunc("/getfcs", func(w http.ResponseWriter, r *http.Request) {
+		if realip.FromRequest(r) != botIP {
+			w.Write([]byte("nothing"))
+			return
+		}
 		lastBotInteraction = time.Now()
 
 		query := devices.Find(bson.M{"hasadded": false})
@@ -400,6 +406,10 @@ func main() {
 	})
 	// /added/fc
 	router.HandleFunc("/added/{fc}", func(w http.ResponseWriter, r *http.Request) {
+		if realip.FromRequest(r) != botIP {
+			w.Write([]byte("fail"))
+			return
+		}
 		b := mux.Vars(r)["fc"]
 		a, err := strconv.Atoi(b)
 		if err != nil {
@@ -445,6 +455,10 @@ func main() {
 	// /lfcs/fc
 	// get param lfcs is lfcs as hex eg 34cd12ab or whatevs
 	router.HandleFunc("/lfcs/{fc}", func(w http.ResponseWriter, r *http.Request) {
+		if realip.FromRequest(r) != botIP {
+			w.Write([]byte("fail"))
+			return
+		}
 		b := mux.Vars(r)["fc"]
 		a, err := strconv.Atoi(b)
 		if err != nil {
