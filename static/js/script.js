@@ -197,7 +197,7 @@ document.getElementById("p1file").addEventListener("change", (e) => {
 */
 document.getElementById("beginButton").addEventListener("click", (e) => {
     e.preventDefault()
-    document.getElementById("friendCode").value = document.getElementById("friendCode").value.replace("-", "")
+    document.getElementById("friendCode").value = document.getElementById("friendCode").value.replace(/-/g, "")
     document.getElementById("fcError").style.display = "none"
     document.getElementById("beginButton").disabled = true
     localStorage.setItem("id0", document.getElementById("id0").value)
