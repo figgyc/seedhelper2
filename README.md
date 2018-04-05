@@ -5,5 +5,6 @@ Rewrite of Seedhelper to fix issues.
 * **Bot that automatically finds part1 without humans (see http://github.com/figgyc/netseedhelper)**
 * Better UI with auto refresh using websockets, dark theme and integrated explanation
 * Allow user to cancel job if they enter details wrong
+* Actually cancel expired jobs on miner side to prevent time wasting and infinite loop
 
 Requires Go and MongoDB.
