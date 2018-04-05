@@ -170,7 +170,7 @@ document.getElementById("p1file").addEventListener("change", (e) => {
             let arrayBuffer = fileReader.result
             let lfcsBuffer = arrayBuffer.slice(0, 8)
             let lfcsArray = new Uint8Array(lfcsBuffer)
-            if (lfcsBuffer == new Uint8Array(32)) {
+            if (lfcsBuffer == new Uint8Array(8)) {
                 alert("part1 is invalid")
                 return
             }
