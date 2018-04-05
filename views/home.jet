@@ -3,7 +3,7 @@
 {{block body()}}
 <main class="container">
     {{ if isUp == false }}
-    <div class="alert alert-danger">Seedhelper seems to be having issues. You may be stuck waiting for a while until the issue is fixed!</p>
+    <div class="alert alert-danger">Seedhelper seems to be having issues. You may be stuck waiting for the bot for a while until the issue is fixed! Uploading an existing part1 and having it mined should be operational. You should ask for a friend on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a> and then upload the part1 here or bruteforce it yourself.</div>
     {{end}}
     <div class="alert alert-info">If you have issues, try refreshing the page, pressing "Start again" below and asking for help on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a></div>
     <button onclick="localStorage.clear(); location.reload()" class="btn">Start again</button>
@@ -175,9 +175,28 @@
                 </div>
             </div>
         </div>
+        <div class="card">
+            <div class="card-header" id="headingY">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseY" aria-expanded="false" aria-controls="collapseY">
+                        Credits
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseY" class="collapse" aria-labelledby="headingY" data-parent="#accordion2">
+                <div class="card-body">
+                    Seedhelper is developed by <a href="https://github.com/figgyc">figgyc</a> and is <a href="https://github.com/figgyc/seedhelper2">open source</a>.
+                    Seedhelper has been possible thanks to many people:
+                    <ul>
+                        <li><a href="https://github.com/Pirater12">@Pirater12</a> for reverse engineering frd:a and making httpc_curl to make the friend code bot possible</li>
+                        <li><a href="https://github.com/zoogie">@zoogie</a> for creating the seedminer applications and finding the vulnerability</li>
+                        <li><a href="https://github.com/Jisagi">@Jisagi</a> for creating the seedminer guide</li>
+                        <li><a href="https://github.com/jason0597">@jason0597</a>, <a href="https://github.com/knight-ryu12">@knight-ryu12</a>, <a href="https://github.com/saibotu">@saibotu</a>, and anyone who has used the service for testing and finding bugs!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-    Seedhelper is developed by
-    <a href="https://github.com/figgyc">figgyc</a> and is
-    <a href="https://github.com/figgyc/seedhelper2">open source</a>
 </main>
 <script defer src="/static/js/script.js"></script> {{end}}
