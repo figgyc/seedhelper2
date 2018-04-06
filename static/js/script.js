@@ -81,8 +81,8 @@ socket.addEventListener("open", (e) => {
     }
 })
 
-socket.addEventListener("close", () => {alert("The socket was closed, refresh the page.")})
-socket.addEventListener("error", () => {alert("The socket was closed, refresh the page.")})
+socket.addEventListener("close", () => {setTimeout(() => {window.location.reload(true)}, 10000)})
+socket.addEventListener("error", () => {setTimeout(() => {window.location.reload(true)}, 10000)})
 
 socket.addEventListener("message", (e) => {
     //console.log("hey!", e.data, JSON.parse(e.data).status)
