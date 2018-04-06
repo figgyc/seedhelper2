@@ -179,9 +179,10 @@ document.getElementById("p1file").addEventListener("change", (e) => {
             let id0Array = new Uint8Array(id0Buffer)
             document.getElementById("friendCode").disabled = true
             document.getElementById("friendCode").value = "movable_part1 provided"
-            if (id0Array != new Uint8Array(32)) { // non blank, if id0 is injected with seedminer_helper
-                let textDecoder = new TextDecoder()
-                let id0String = textDecoder.decode(id0Array)
+            let textDecoder = new TextDecoder()
+            let id0String = textDecoder.decode(id0Array)
+            console.log(id0String, id0String.length)
+            if (id0String != "") { // non blank, if id0 is injected with seedminer_helper
                 let id0Input = document.getElementById("id0")
                 id0Input.disabled = true
                 id0Input.value = id0String
