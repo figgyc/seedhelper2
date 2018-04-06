@@ -69,7 +69,7 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 	}
 	vars.Set("isUp", (lastBotInteraction.After(time.Now().Add(time.Minute * -5))))
 	vars.Set("minerCount", len(miners))
-	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$ne": time.Now()}).Count()
+	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$ne": time.Now()}}).Count()
 	if err != nil {
 		panic(err)
 	}
