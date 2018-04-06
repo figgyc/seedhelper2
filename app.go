@@ -255,6 +255,13 @@ func main() {
 					reverse(lfcsSlice)
 					var lfcsArray [8]byte
 					copy(lfcsArray[:], lfcsSlice[:])
+					if lfcsArray == [8]byte{} {
+						msg := "{\"status\": \"friendCodeInvalid\"}"
+						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							log.Println(err)
+							return
+						}
+					}
 					device := bson.M{"lfcs": lfcsArray, "_id": object["id0"].(string), "haspart1": true, "hasadded": true}
 					_, err = devices.Upsert(device, device)
 					if err != nil {

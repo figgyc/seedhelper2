@@ -40,7 +40,7 @@
                         <button id="beginButton" class="btn btn-primary">Go</button>
 
                         <div id="fcError" class="alert alert-danger" role="alert" style="display: none;">
-                            Your Friend Code or ID0 is incorrect. Type it correctly, the ID0 in lowercase and the Friend Code without dashes.
+                            Your Friend Code, Part1 or ID0 is incorrect. Type it correctly, the ID0 in lowercase and the Friend Code without dashes.
                         </div>
                         <div class="progress" id="fcProgress" style="display: none;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
