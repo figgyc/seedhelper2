@@ -167,7 +167,7 @@
                         <li>Copy seedminer_autolauncher.py and bfcl.exe to the seedminer folder.</li>
                         <li>Open an admin command prompt by opening Start, typing cmd and pressing Ctrl+Shift+Enter. Type "py
                             -m pip install requests" without the quotes and press enter.</li>
-                        <li>Shift+right click in the seedminer folder, press "Open command window here" and type "py seedminer_autolauncher.py"
+                        <li>Shift+right click in the seedminer folder, press "Open command window here" or "Open Windows Powershell here" and type "py seedminer_autolauncher.py"
                             to start working. Press Ctrl+C inside the command window to stop working.</li>
                     </ol>
                 </div>
