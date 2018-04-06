@@ -181,7 +181,7 @@ document.getElementById("p1file").addEventListener("change", (e) => {
             document.getElementById("friendCode").value = "movable_part1 provided"
             let textDecoder = new TextDecoder()
             let id0String = textDecoder.decode(id0Array)
-            console.log(id0String, id0String.length)
+            console.log(id0String, btoa(id0String), id0String.length)
             if (id0String != "") { // non blank, if id0 is injected with seedminer_helper
                 let id0Input = document.getElementById("id0")
                 id0Input.disabled = true
