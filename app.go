@@ -393,6 +393,14 @@ func main() {
 						}
 						continue
 					}
+					if object["defoID0"] == "no" && checkIfID1(object["id0"].(string)) {
+						msg := "{\"status\": \"couldBeID1\"}"
+						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							log.Println(err)
+							return
+						}
+						continue
+					}
 					fmt.Println(fc)
 					device := bson.M{"friendcode": uint64(fc), "hasadded": false, "haspart1": false}
 					_, err = devices.Upsert(bson.M{"_id": object["id0"].(string)}, device)
