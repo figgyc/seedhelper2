@@ -208,6 +208,7 @@ document.getElementById("beginButton").addEventListener("click", (e) => {
     document.getElementById("friendCode").value = document.getElementById("friendCode").value.replace(/-/g, "")
     document.getElementById("fcError").style.display = "none"
     document.getElementById("beginButton").disabled = true
+    document.getElementById("id0").value = document.getElementById("id0").value.toLowerCase()
     localStorage.setItem("id0", document.getElementById("id0").value)
     if (document.getElementById("part1b64").value != "") {
         socket.send(JSON.stringify({
