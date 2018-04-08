@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/CloudyKit/jet"
+	"github.com/JulianDuniec/crc7"
 	"github.com/Tomasen/realip"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -131,6 +132,74 @@ func reverse(numbers []byte) {
 	for i, j := 0, len(numbers)-1; i < j; i, j = i+1, j-1 {
 		numbers[i], numbers[j] = numbers[j], numbers[i]
 	}
+}
+
+func checkIfID1(id1s string) bool {
+	/*
+		1) Take your id1
+			24A90106478089A4534C303800035344
+
+		2) Split it into u16 chunks
+			24A9 0106 4780 89A4 534C 3038 0003 5344
+
+		3) Reverse them backwards
+			5344 0003 3038 534C 89A4 4780 0106 24A9
+
+		4) Endian flip each of those chunks
+			4453 0300 3830 4C53 A489 8047 0601 A924
+
+		5) Shuffle them around with the table on 3dbrew (backwards!)
+			0601 A924 A489 8047 3830 4C53 4453 0300
+
+		6) Join them together
+			0601A924A489804738304C5344530300 <-- cid
+	*/
+	//id1s := "24A90106478089A4534C303800035344"
+	id1, err := hex.DecodeString(id1s)
+	if err != nil {
+		return true
+	}
+	var chunks [8][2]byte
+	for i := 0; i < 8; i++ {
+		chunks[i][0] = id1[i*2]
+		chunks[i][1] = id1[(i*2)+1]
+	}
+	var rchunks [8][2]byte
+	for i := 0; i < 8; i++ {
+		rchunks[7-i] = chunks[i]
+	}
+	var echunks [8][2]byte
+	for i := 0; i < 8; i++ {
+		echunks[i][0] = rchunks[i][1]
+		echunks[i][1] = rchunks[i][0]
+	}
+	var schunks [8][2]byte
+	/* 3dbrew:
+	Input CID u16 index	Output CID u16 index
+	6					0
+	7					1
+	4					2
+	5					3
+	2					4
+	3					5
+	0					6
+	1					7
+	*/
+	schunks[0] = echunks[6]
+	schunks[1] = echunks[7]
+	schunks[2] = echunks[4]
+	schunks[3] = echunks[5]
+	schunks[4] = echunks[2]
+	schunks[5] = echunks[3]
+	schunks[6] = echunks[0]
+	schunks[7] = echunks[1]
+	var cid [16]byte
+	for i := 0; i < 8; i++ {
+		cid[i*2] = schunks[i][0]
+		cid[(i*2)+1] = schunks[i][1]
+	}
+	hash := crc7.ComputeHash(cid[:])
+	return cid[15] == hash
 }
 
 func main() {
@@ -258,6 +327,14 @@ func main() {
 					var checkArray [8]byte
 					if lfcsArray == checkArray {
 						msg := "{\"status\": \"friendCodeInvalid\"}"
+						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							log.Println(err)
+							return
+						}
+						continue
+					}
+					if object["defoID0"] == "no" && checkIfID1(object["id0"].(string)) {
+						msg := "{\"status\": \"couldBeID1\"}"
 						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 							log.Println(err)
 							return

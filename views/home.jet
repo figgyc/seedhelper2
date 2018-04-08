@@ -42,6 +42,10 @@
                         <div id="fcError" class="alert alert-danger" role="alert" style="display: none;">
                             Your Friend Code, Part1 or ID0 is incorrect. Type it correctly, the ID0 in lowercase and the Friend Code without dashes.
                         </div>
+                        <div id="fcWarning" class="alert alert-warning" role="alert" style="display: none;">
+                            Your ID0 appears to be an ID1. The ID0 is the name of the folder inside the Nintendo 3DS folder, <b>not the folder inside that!</b> If you are absolutely certain you are correct, press Go, but if you are wrong then the bruteforce will never end!
+                            <img src="https://i.imgur.com/1AeECFF.png" />
+                        </div>
                         <div class="progress" id="fcProgress" style="display: none;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
                                 aria-valuemax="100" style="width: 100%">Waiting...</div>

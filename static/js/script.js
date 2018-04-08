@@ -71,6 +71,7 @@ function base64ArrayBuffer(arrayBuffer) {
   //
 
 let socket = new WebSocket("wss://" + location.host + "/socket")
+let force = "no"
 
 socket.addEventListener("open", (e) => {
     if (localStorage.getItem("id0") != null) {
@@ -147,6 +148,12 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFive").classList.remove("show")
         document.getElementById("bfProgress").classList.add("bg-warning")
     }
+    if (JSON.parse(e.data).status == "couldBeID1") {
+        document.getElementById("fcProgress").style.display = "none"
+        document.getElementById("fcWarning").style.display = "block"
+        document.getElementById("beginButton").disabled = false
+        force = "yes"
+    }
 })
 
 /*
@@ -205,12 +212,14 @@ document.getElementById("beginButton").addEventListener("click", (e) => {
     if (document.getElementById("part1b64").value != "") {
         socket.send(JSON.stringify({
             part1: document.getElementById("part1b64").value,
+            defoID0: force,
             id0: document.getElementById("id0").value,
         }))
     } else {
         socket.send(JSON.stringify({
             friendCode: document.getElementById("friendCode").value,
             id0: document.getElementById("id0").value,
+            defoID0: force
         }))
     }
 })
