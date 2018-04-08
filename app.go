@@ -381,7 +381,7 @@ func main() {
 						valid = false
 					}
 
-					if regexp.MustCompile("[0-9a-f]{32}").MatchString(object["id0"].(string)) == false {
+					if regexp.MustCompile("[0-9a-fA-F]{32}").MatchString(object["id0"].(string)) == false {
 						valid = false
 					}
 
@@ -393,7 +393,7 @@ func main() {
 						}
 						continue
 					}
-					if object["defoID0"] == "no" && checkIfID1(object["id0"].(string)) {
+					if object["defoID0"] != "yes" && checkIfID1(object["id0"].(string)) == true {
 						msg := "{\"status\": \"couldBeID1\"}"
 						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 							log.Println(err)
