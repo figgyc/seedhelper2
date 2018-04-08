@@ -245,7 +245,8 @@ document.getElementById("enableButton").addEventListener("click", (e) => {
 /*
     cancel task
 */
-document.getElementById("cancelButton").addEventListener("click", (e) => {
+
+function cancel (e) {
     e.preventDefault()
     document.getElementById("cancelButton").disabled = true
     document.getElementById("downloadPart1").click()
@@ -255,4 +256,9 @@ document.getElementById("cancelButton").addEventListener("click", (e) => {
     }))
     document.getElementById("collapseFour").classList.remove("show")
     document.getElementById("collapseOne").classList.add("show")
-})
+}
+
+document.getElementById("cancelButton").addEventListener("click", cancel)
+document.getElementById("cancelButton1").addEventListener("click", cancel)
+document.getElementById("cancelButton2").addEventListener("click", cancel)
+document.getElementById("cancelButton3").addEventListener("click", cancel)

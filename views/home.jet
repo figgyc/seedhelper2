@@ -6,7 +6,7 @@
     <div class="alert alert-danger">Seedhelper seems to be having issues. You may be stuck waiting for the bot for a while until the issue is fixed! Uploading an existing part1 and having it mined should be operational. You should ask for a friend on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a> and then upload the part1 here or bruteforce it yourself.</div>
     {{end}}
     <div class="alert alert-info">If you have issues, try refreshing the page, pressing "Start again" below and asking for help on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a></div>
-    <button onclick="localStorage.clear(); location.reload()" class="btn">Start again</button>
+    <button id="cancelButton1" class="btn">Start again</button>
     <div id="accordion">
         <div class="card">
             <div class="card-header" id="headingOne">
@@ -85,7 +85,7 @@
                     <a href="#" id="downloadPart1" class="disableButton">download movable_part1.sed</a> and go back to the guide and bruteforce the movable.sed yourself. Otherwise,
                     <b>press Continue</b> if you need someone else to bruteforce it.
                     <button id="continue" class="btn btn-primary">Continue</button>
-                    <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
+                    <button id="cancelButton2" class="btn">Do another device</button>
                     <!-- <p style="color: red">The bruteforce client is currently disabled while the rest of the service is disabled. Ask elsewhere, such as Discord or GBATemp, for a friend to bruteforce if you need it.</p> -->
                     <p id="disableMessage" style="display: none;">If you are bruteforceing with your own GPU, you don't need to press this button! If you downloaded your
                         part1 on accident or for another reason, click
@@ -131,7 +131,7 @@
                     <a href="#" id="downloadMovable">Download movable.sed</a> and go back to the guide to inject your DSiWare.
                     Thanks to the people who run the bruteforcing script who make this service possible!
                     <br>
-                    <button onclick="localStorage.clear(); location.reload()" class="btn">Do another device</button>
+                    <button id="cancelButton3" class="btn">Do another device</button>
                 </div>
             </div>
         </div>
