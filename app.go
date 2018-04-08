@@ -303,7 +303,7 @@ func main() {
 				} else if object["part1"] != nil {
 					// add to work pool
 					valid := true
-					if regexp.MustCompile("[0-9a-f]{32}").MatchString(object["id0"].(string)) == false {
+					if regexp.MustCompile("[0-9a-fA-F]{32}").MatchString(object["id0"].(string)) == false {
 						valid = false
 					}
 
