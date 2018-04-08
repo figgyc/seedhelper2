@@ -265,6 +265,8 @@ function cancel (e) {
     }))
     document.getElementById("collapseFour").classList.remove("show")
     document.getElementById("collapseOne").classList.add("show")
+    localStorage.clear();
+    location.reload(true);
 }
 
 document.getElementById("cancelButton").addEventListener("click", cancel)
