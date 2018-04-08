@@ -333,7 +333,7 @@ func main() {
 						}
 						continue
 					}
-					if object["defoID0"] == "no" && checkIfID1(object["id0"].(string)) {
+					if object["defoID0"] != "yes" && checkIfID1(object["id0"].(string)) {
 						msg := "{\"status\": \"couldBeID1\"}"
 						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 							log.Println(err)
@@ -448,8 +448,14 @@ func main() {
 								log.Println(err)
 								//return
 							}
-						} else {
+						} else if device.HasAdded == true {
 							msg := "{\"status\": \"friendCodeAdded\"}"
+							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+								log.Println(err)
+								//return
+							}
+						} else {
+							msg := "{\"status\": \"friendCodeProcessing\"}"
 							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 								log.Println(err)
 								//return
