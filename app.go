@@ -200,13 +200,14 @@ func checkIfID1(id1s string) bool {
 	}
 	//hash := crc7.ComputeHash(cid[:])
 
-	// pnm+oid are valid ascii (<0x7F)
+	// pnm+oid should be valid ascii (<0x7F) but don't seem to be on most cards
+	/*
 	pnmoid := cid[1:7]
 	for i := 0; i < 7; i++ {
 		if pnmoid[i] > 0x7F {
 			return false
 		}
-	}
+	}*/
 
 	// TODO: mdt check
 	hash := byte(0) // 3ds doesnt get the real  hash
