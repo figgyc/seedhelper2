@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/CloudyKit/jet"
-	"github.com/JulianDuniec/crc7"
+	// "github.com/JulianDuniec/crc7"
 	"github.com/Tomasen/realip"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -198,7 +198,18 @@ func checkIfID1(id1s string) bool {
 		cid[i*2] = schunks[i][0]
 		cid[(i*2)+1] = schunks[i][1]
 	}
-	hash := crc7.ComputeHash(cid[:])
+	//hash := crc7.ComputeHash(cid[:])
+
+	// pnm+oid are valid ascii (<0x7F)
+	pnmoid := cid[1:7]
+	for i := 0; i < 7; i++ {
+		if pnmoid[i] > 0x7F {
+			return false
+		}
+	}
+
+	// TODO: mdt check
+	hash := byte(0) // 3ds doesnt get the real  hash
 	return cid[15] == hash
 }
 
