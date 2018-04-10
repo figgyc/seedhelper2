@@ -641,12 +641,23 @@ func main() {
 		id0 := mux.Vars(r)["id0"]
 		fmt.Println(id0)
 
-		err := devices.Update(bson.M{"_id": id0}, bson.M{"$unset": bson.M{"expirytime": ""}})
+		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"wantsbf": false}})
 		if err != nil {
 			w.Write([]byte("error"))
 			return
 		}
 		w.Write([]byte("success"))
+
+		for id01, conn := range connections {
+			if id0 == id01 {
+				msg := "{\"status\": \"flag\"}"
+				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+					log.Println(err)
+					delete(connections, id0)
+					return
+				}
+			}
+		}
 
 	})
 	// : 86.15.167.38
