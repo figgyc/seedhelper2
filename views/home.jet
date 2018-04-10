@@ -5,7 +5,7 @@
     {{ if isUp == false }}
     <div class="alert alert-danger">Seedhelper seems to be having issues. You may be stuck waiting for the bot for a while until the issue is fixed! Uploading an existing part1 and having it mined should be operational. You should ask for a friend on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a> and then upload the part1 here or bruteforce it yourself.</div>
     {{end}}
-    <div class="alert alert-info">If you have issues, try refreshing the page, pressing "Start again" below and asking for help on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a></div>
+    <div class="alert alert-info">If you have issues, try refreshing the page, pressing "Start again" below and asking for help on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a>.</div>
     <button id="cancelButton1" class="btn">Start again</button>
     <div id="accordion">
         <div class="card">
@@ -43,7 +43,7 @@
                             Your Friend Code, Part1 or ID0 is incorrect. Type it correctly, the ID0 in lowercase and the Friend Code without dashes.
                         </div>
                         <div id="fcWarning" class="alert alert-warning" role="alert" style="display: none;">
-                            Your ID0 appears to be an ID1. The ID0 is the name of the folder inside the Nintendo 3DS folder, <b>not the folder inside that!</b> If you are absolutely certain you are correct, press Go, but if you are wrong then the bruteforce will never end!
+                            Your ID0 appears to be an ID1. The ID0 is the name of the folder inside the Nintendo 3DS folder, <b>not the folder inside that!</b> Check your ID0 is correct and try again. If you are having issues finding your ID0, ask the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a>.
                             <br /><img src="https://i.imgur.com/1AeECFF.png" />
                         </div>
                         <div class="progress" id="fcProgress" style="display: none;">

@@ -151,8 +151,6 @@ socket.addEventListener("message", (e) => {
     if (JSON.parse(e.data).status == "couldBeID1") {
         document.getElementById("fcProgress").style.display = "none"
         document.getElementById("fcWarning").style.display = "block"
-        document.getElementById("beginButton").disabled = false
-        force = "yes"
     }
 })
 
@@ -250,6 +248,14 @@ document.querySelector(".disableButton").addEventListener("click", (e) => {
 document.getElementById("enableButton").addEventListener("click", (e) => {
     document.getElementById("continue").disabled = false
     document.getElementById("disableMessage").style.display = "none"
+})
+
+document.getElementById("statusText").addEventListener("click", (e) => {
+    force = "yes"
+})
+
+document.getElementById("friendCode").addEventListener("change", e => {
+    document.getElementById("beginButton").disabled = false
 })
 
 /*

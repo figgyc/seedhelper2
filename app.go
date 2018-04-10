@@ -202,12 +202,12 @@ func checkIfID1(id1s string) bool {
 
 	// pnm+oid should be valid ascii (<0x7F) but don't seem to be on most cards
 	/*
-	pnmoid := cid[1:7]
-	for i := 0; i < 7; i++ {
-		if pnmoid[i] > 0x7F {
-			return false
-		}
-	}*/
+		pnmoid := cid[1:7]
+		for i := 0; i < 7; i++ {
+			if pnmoid[i] > 0x7F {
+				return false
+			}
+		}*/
 
 	// TODO: mdt check
 	hash := byte(0) // 3ds doesnt get the real  hash
@@ -382,6 +382,9 @@ func main() {
 						valid = false
 					}
 					if fc > 0x7FFFFFFFFF {
+						valid = false
+					}
+					if fc == 27599290078 { // the bot
 						valid = false
 					}
 					principalID := fc & 0xFFFFFFFF
