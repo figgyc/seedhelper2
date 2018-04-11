@@ -210,8 +210,8 @@ func checkIfID1(id1s string) bool {
 		}*/
 
 	// TODO: mdt check
-	hash := byte(0) // 3ds doesnt get the real  hash
-	return cid[15] == hash
+	// zoogie said that he thinks this is reliable, idk but whatever
+	return cid[15] == byte(0x00) && (cid[1] == byte(0x00) || cid[1] == byte(0x01))
 }
 
 func main() {
