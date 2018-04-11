@@ -80,12 +80,12 @@ while True:
             print("Bruteforcing")
             process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"], stdout=subprocess.PIPE, universal_newlines=True)
             timer = 0
-            stdout = open(process.stdout)
+            #stdout = open(process.stdout)
             while process.poll() == None:
                 # we need to poll for kill more often then we check server because we would waste up to 30 secs after finish
                 timer = timer + 1
                 time.sleep(1)
-                line = stdout.readline()
+                line = process.stdout.readline()
                 if line != "":
                     print("rc: '" + line + "'")
                 if timer % 30 == 0:
