@@ -251,7 +251,12 @@ document.getElementById("enableButton").addEventListener("click", (e) => {
 })
 
 document.getElementById("statusText").addEventListener("click", (e) => {
+    document.getElementById("beginButton").disabled = false
     force = "yes"
+})
+
+document.getElementById("id0").addEventListener("change", e => {
+    document.getElementById("beginButton").disabled = false
 })
 
 document.getElementById("friendCode").addEventListener("change", e => {
