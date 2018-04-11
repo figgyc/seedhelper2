@@ -88,12 +88,18 @@ while True:
                 line = process.stdout.readline()
                 if line != "":
                     print("rc: '" + line + "'")
+                if "250" in line:
+                    print("Job taking too long, killing...")
+                    s.get(baseurl + "/cancel/" + currentid)
+                    subprocess.call(['taskkill', '/F', '/T', '/IM', 'bfcl.exe'])
+                    break                    
                 if timer % 30 == 0:
                     r3 = s.get(baseurl + "/check/" + currentid)
                     if r3.text != "ok":
                         print("Job cancelled or expired, killing...")
                         # process.kill() broke
                         subprocess.call(['taskkill', '/F', '/T', '/IM', 'bfcl.exe'])
+                        break
             #os.system('"' + sys.executable + '" seedminer_launcher3.py gpu')
             if os.path.isfile("movable.sed"):
                 print("Uploading")
