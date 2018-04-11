@@ -15,7 +15,7 @@ import io
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "1.2"
+currentVersion = "1.3"
 
 # https://stackoverflow.com/a/16696317 thx
 def download_file(url, local_filename):
@@ -85,10 +85,10 @@ while True:
                 # we need to poll for kill more often then we check server because we would waste up to 30 secs after finish
                 timer = timer + 1
                 time.sleep(1)
-                line = process.stdout.readline()
+                line = process.stdout.read()
                 if line != "":
                     print("rc: '" + line + "'")
-                if "250" in line:
+                if "offset:250" in line:
                     print("Job taking too long, killing...")
                     s.get(baseurl + "/cancel/" + currentid)
                     subprocess.call(['taskkill', '/F', '/T', '/IM', 'bfcl.exe'])
