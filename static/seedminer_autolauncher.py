@@ -15,7 +15,7 @@ import io
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "1.1"
+currentVersion = "1.2"
 
 # https://stackoverflow.com/a/16696317 thx
 def download_file(url, local_filename):
