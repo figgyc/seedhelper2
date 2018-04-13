@@ -114,7 +114,7 @@
                     <br />
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="bfProgress" aria-valuenow="100" aria-valuemin="0"
-                            aria-valuemax="100" style="width: 100%">Bruteforceing...</div>
+                            aria-valuemax="100" style="width: 100%">Waiting...</div>
                     </div>
                     <button id="cancelButton" class="btn btn-danger">Cancel</button> If you cancel the bruteforce, you will have to restart the process!
                 </div>

@@ -148,6 +148,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFour").classList.add("show")
         document.getElementById("collapseFive").classList.remove("show")
         document.getElementById("bfProgress").classList.add("bg-warning")
+        document.getElementById("bfProgress").innerText = "Bruteforcing..."
     }
     if (JSON.parse(e.data).status == "couldBeID1") {
         document.getElementById("fcProgress").style.display = "none"
