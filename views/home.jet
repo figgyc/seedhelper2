@@ -108,7 +108,7 @@
             <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
                 <div class="card-body">
                     <b>Wait</b> for the bruteforce to complete. Feel free to leave the website running in the background or even close it. This may take up to an hour, but it usually lasts about 30 minutes and sometimes less. Don't worry if your GPU is not powerful because this is happening on another computer. While you wait, please check that your ID0 is correct and cancel
-                    the job if it is not, or you will be waiting forever!
+                    the job if it is not, or you will be waiting forever! If you have been waiting a while and nothing has happened, try refreshing the page
                     <br /> ID0:
                     <span id="id0Fill"></span>
                     <br />
