@@ -16,7 +16,7 @@ import io
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "1.4"
+currentVersion = "1.5"
 
 # https://stackoverflow.com/a/16696317 thx
 def download_file(url, local_filename):
@@ -79,20 +79,20 @@ while True:
             print("Downloading part1 for device " + currentid)
             download_file(baseurl + '/part1/' + currentid, 'movable_part1.sed')
             print("Bruteforcing " + str(datetime.datetime.now()))
-            process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"], stdout=subprocess.PIPE, universal_newlines=True)
+            process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"])#, stdout=subprocess.PIPE, universal_newlines=True)
             timer = 0
             #stdout = open(process.stdout)
             while process.poll() == None:
                 # we need to poll for kill more often then we check server because we would waste up to 30 secs after finish
                 timer = timer + 1
                 time.sleep(1)
-                line = process.stdout.read()
-                print(line)
-                if "offset:250" in line:
-                    print("Job taking too long, killing...")
-                    s.get(baseurl + "/cancel/" + currentid)
-                    subprocess.call(['taskkill', '/F', '/T', '/IM', 'bfcl.exe'])
-                    break
+                #line = process.stdout.read()
+                #print(line)
+                #if "offset:250" in line:
+                #    print("Job taking too long, killing...")
+                #    s.get(baseurl + "/cancel/" + currentid)
+                #    subprocess.call(['taskkill', '/F', '/T', '/IM', 'bfcl.exe'])
+                #    break
                 if timer % 30 == 0:
                     r3 = s.get(baseurl + "/check/" + currentid)
                     if r3.text != "ok":
