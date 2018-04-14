@@ -640,8 +640,16 @@ func main() {
 	router.HandleFunc("/cancel/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
 		fmt.Println(id0)
+		kill := false
 
-		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"wantsbf": false}})
+		yn, ok := r.URL.Query()["kill"]
+		if ok == true {
+			if yn[0] == "n" {
+				kill = true
+			}
+		}
+
+		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"wantsbf": kill, "expirytime": time.Time{}}})
 		if err != nil {
 			w.Write([]byte("error"))
 			return
@@ -660,7 +668,6 @@ func main() {
 		}
 
 	})
-	// : 86.15.167.38
 	// /getwork
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()

@@ -16,7 +16,7 @@ import io
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "1.6"
+currentVersion = "1.7"
 
 # https://stackoverflow.com/a/16696317 thx
 def download_file(url, local_filename):
@@ -53,7 +53,12 @@ os.system('"' + sys.executable + '" seedminer_launcher3.py update-db')
 
 def signal_handler(signal, frame):
         print('Exiting...')
-        s.get(baseurl + "/cancel/" + currentid)
+        cancel = input("kill job or requeue? [Y/n]")
+        p = "y"
+        if cancel.lower() == "n":
+            p = "n"
+        if currentid != "":
+            s.get(baseurl + "/cancel/" + currentid + "?kill=" + p)
         sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -99,6 +104,9 @@ while True:
                         print("Job cancelled or expired, killing...")
                         # process.kill() broke
                         subprocess.call(['taskkill', '/F', '/T', '/IM', 'bfcl.exe'])
+                        currentid = ""
+                        print("press ctrl-c to quit")
+                        time.sleep(5)
                         continue
             #os.system('"' + sys.executable + '" seedminer_launcher3.py gpu')
             if os.path.isfile("movable.sed"):
@@ -112,6 +120,9 @@ while True:
                     print("Upload succeeded!")
                     os.remove("movable.sed")
                     os.remove(latest_file)
+                    currentid = ""
+                    print("press ctrl-c to quit")
+                    time.sleep(5)
                 else:
                     print("Upload failed!")
                     sys.exit(1)
