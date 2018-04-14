@@ -16,7 +16,7 @@ import io
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "1.5"
+currentVersion = "1.6"
 
 # https://stackoverflow.com/a/16696317 thx
 def download_file(url, local_filename):
@@ -99,7 +99,7 @@ while True:
                         print("Job cancelled or expired, killing...")
                         # process.kill() broke
                         subprocess.call(['taskkill', '/F', '/T', '/IM', 'bfcl.exe'])
-                        break
+                        continue
             #os.system('"' + sys.executable + '" seedminer_launcher3.py gpu')
             if os.path.isfile("movable.sed"):
                 print("Uploading")
