@@ -16,7 +16,7 @@ import io
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "1.7"
+currentVersion = "1.8"
 
 # https://stackoverflow.com/a/16696317 thx
 def download_file(url, local_filename):
@@ -53,13 +53,18 @@ os.system('"' + sys.executable + '" seedminer_launcher3.py update-db')
 
 def signal_handler(signal, frame):
         print('Exiting...')
-        cancel = input("kill job or requeue? [Y/n]")
-        p = "y"
-        if cancel.lower() == "n":
-            p = "n"
         if currentid != "":
-            s.get(baseurl + "/cancel/" + currentid + "?kill=" + p)
-        sys.exit(0)
+            cancel = input("Kill job, requeue, or do nothing? [k/r/N]")
+            p = "x"
+            if cancel.lower() == "r":
+                p = "n"
+            if cancel.lower() == "k":
+                p = "y"
+            if p != "x":
+                s.get(baseurl + "/cancel/" + currentid + "?kill=" + p)
+                sys.exit(0)
+        else:
+            sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
 
@@ -84,7 +89,7 @@ while True:
             print("Downloading part1 for device " + currentid)
             download_file(baseurl + '/part1/' + currentid, 'movable_part1.sed')
             print("Bruteforcing " + str(datetime.datetime.now()))
-            process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"])#, stdout=subprocess.PIPE, universal_newlines=True)
+            process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"], preexec_fn=os.setpgrp)#, stdout=subprocess.PIPE, universal_newlines=True)
             timer = 0
             #stdout = open(process.stdout)
             while process.poll() == None:
