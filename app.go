@@ -353,8 +353,8 @@ func main() {
 						}
 						continue
 					}
-					device := bson.M{"lfcs": lfcsArray, "_id": object["id0"].(string), "haspart1": true, "hasadded": true}
-					_, err = devices.Upsert(device, device)
+					device := bson.M{"lfcs": lfcsArray, "haspart1": true, "hasadded": true}
+					_, err = devices.Upsert(bson.M{"_id": object["id0"].(string)}, device)
 					if err != nil {
 						log.Println(err)
 						//return
@@ -912,7 +912,7 @@ func main() {
 					}
 				}
 				for _, device := range theDevices {
-					if (device.ExpiryTime != time.Time{} || device.ExpiryTime.Before(time.Now()) == true) {
+					if (device.ExpiryTime != time.Time{} && device.ExpiryTime.Before(time.Now()) == true) {
 						err = devices.Update(device, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
 						if err != nil {
 							fmt.Println(err)
