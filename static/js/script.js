@@ -148,6 +148,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFour").classList.add("show")
         document.getElementById("collapseFive").classList.remove("show")
         //document.getElementById("bfProgress").classList.add("bg-warning")
+        document.getElementById("id0Fill").innerText = localStorage.getItem("id0")
         //document.getElementById("bfProgress").innerText = "Bruteforcing..."
     }
     if (JSON.parse(e.data).status == "bruteforcing") {
@@ -160,6 +161,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFour").classList.add("show")
         document.getElementById("collapseFive").classList.remove("show")
         document.getElementById("bfProgress").classList.add("bg-warning")
+        document.getElementById("id0Fill").innerText = localStorage.getItem("id0")
         document.getElementById("bfProgress").innerText = "Bruteforcing..."
     }
     if (JSON.parse(e.data).status == "couldBeID1") {
