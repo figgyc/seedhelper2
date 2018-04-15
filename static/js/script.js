@@ -138,6 +138,18 @@ socket.addEventListener("message", (e) => {
         document.getElementById("fcError").style.display = "block"
         document.getElementById("fcError").innerText = "Your movable.sed took to long to bruteforce. This is most likely because your ID0 was incorrect. Please make sure it is correct by asking for help."
     }
+    if (JSON.parse(e.data).status == "queue") {
+        /* 
+            Step 4
+        */
+        document.getElementById("collapseOne").classList.remove("show")
+        document.getElementById("collapseTwo").classList.remove("show")
+        document.getElementById("collapseThree").classList.remove("show")
+        document.getElementById("collapseFour").classList.add("show")
+        document.getElementById("collapseFive").classList.remove("show")
+        //document.getElementById("bfProgress").classList.add("bg-warning")
+        //document.getElementById("bfProgress").innerText = "Bruteforcing..."
+    }
     if (JSON.parse(e.data).status == "bruteforcing") {
         /* 
             Step 4.1
