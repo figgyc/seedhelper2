@@ -89,7 +89,7 @@ while True:
             print("Downloading part1 for device " + currentid)
             download_file(baseurl + '/part1/' + currentid, 'movable_part1.sed')
             print("Bruteforcing " + str(datetime.datetime.now()))
-            process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"], preexec_fn=os.setpgrp)#, stdout=subprocess.PIPE, universal_newlines=True)
+            process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"], creationflags=0x00000200)#, stdout=subprocess.PIPE, universal_newlines=True)
             timer = 0
             #stdout = open(process.stdout)
             while process.poll() == None:
