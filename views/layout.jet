@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary" style="border: none">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary" id="navbar" style="border: none">
         <a class="navbar-brand" href="/">Seedhelper</a>
         <span id="statusText" class="navbar-text ml-auto">{{yield status()}}</span>
     </nav>

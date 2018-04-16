@@ -82,8 +82,22 @@ socket.addEventListener("open", (e) => {
     }
 })
 
-socket.addEventListener("close", () => {setTimeout(() => {window.location.reload(true)}, 10000)})
-socket.addEventListener("error", () => {setTimeout(() => {window.location.reload(true)}, 10000)})
+socket.addEventListener("close", () => {
+    document.getElementById("navbar").classList.remove("bg-primary")
+    document.getElementById("statusText").innerText = "Refresh the page"
+    document.getElementById("navbar").classList.add("bg-warning")
+    setTimeout(() => {
+        window.location.reload(true)
+    }, 10000)
+})
+socket.addEventListener("error", () => {
+    document.getElementById("navbar").classList.remove("bg-primary")
+    document.getElementById("statusText").innerText = "Refresh the page"
+    document.getElementById("navbar").classList.add("bg-warning")
+    setTimeout(() => {
+        window.location.reload(true)
+    }, 10000)
+})
 
 socket.addEventListener("message", (e) => {
     //console.log("hey!", e.data, JSON.parse(e.data).status)
