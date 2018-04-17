@@ -1,4 +1,6 @@
-{{extends "layout.jet"}} {{block body()}}
+{{extends "layout.jet"}} 
+{{block status()}}404{{end}}
+{{block body()}}
 <main class="container">
     <h3>404</h3>
     <p>That page does not exist.</p>

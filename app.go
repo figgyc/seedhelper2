@@ -241,7 +241,7 @@ func main() {
 
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	router.Use(logger)
+	//router.Use(logger)
 	router.Use(filetypeFixer)
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
