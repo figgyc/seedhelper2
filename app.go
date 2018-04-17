@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/binary"
@@ -836,6 +837,13 @@ func main() {
 			fmt.Println(err)
 			return
 		}
+
+		// verify
+		keyy := movable[0x110:0x11F]
+		sha := sha256.Sum256(keyy)
+		testid0 := fmt.Sprintf("%08x%08x%08x%08x", sha[0:4], sha[4:8], sha[8:12], sha[12:16])
+		fmt.Println(testid0, id0)
+
 		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"msed": movable, "hasmovable": true, "expirytime": time.Time{}, "wantsbf": false}})
 		if err != nil {
 			fmt.Println(err)
