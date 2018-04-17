@@ -842,7 +842,7 @@ func main() {
 		keyy := movable[0x110:0x11F]
 		sha := sha256.Sum256(keyy)
 		testid0 := fmt.Sprintf("%08x%08x%08x%08x", sha[0:4], sha[4:8], sha[8:12], sha[12:16])
-		fmt.Println("id0check:", hex.EncodeToString(keyy) hex.EncodeToString(sha[:]), testid0, id0)
+		fmt.Println("id0check:", hex.EncodeToString(keyy), hex.EncodeToString(sha[:]), testid0, id0)
 
 		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"msed": movable, "hasmovable": true, "expirytime": time.Time{}, "wantsbf": false}})
 		if err != nil {
