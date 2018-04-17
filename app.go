@@ -288,7 +288,7 @@ func main() {
 				if object["id0"] == nil {
 					//return
 				}
-				fmt.Println(object["part1"], "packet")
+				//fmt.Println(object["part1"], "packet")
 				/*isRegistered := false
 				for _, v := range connections {
 					if v == conn {
@@ -432,7 +432,7 @@ func main() {
 
 				} else {
 					// checc
-					fmt.Println("check")
+					//fmt.Println("check")
 					query := devices.Find(bson.M{"_id": object["id0"].(string)})
 					count, err := query.Count()
 					if err != nil {
@@ -541,7 +541,7 @@ func main() {
 		}
 		fc := uint64(a)
 
-		fmt.Println(r, &r)
+		//fmt.Println(r, &r)
 
 		err = devices.Update(bson.M{"friendcode": fc, "hasadded": false}, bson.M{"$set": bson.M{"hasadded": true}})
 		if err != nil { // && err != mgo.ErrNotFound {
