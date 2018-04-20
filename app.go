@@ -354,7 +354,7 @@ func main() {
 						}
 						continue
 					}
-					device := bson.M{"lfcs": lfcsArray, "haspart1": true, "hasadded": true, "wantsbf": true}
+					device := bson.M{"lfcs": lfcsArray, "haspart1": true, "hasadded": true, "wantsbf": true, "expirytime": time.Time{}}
 					_, err = devices.Upsert(bson.M{"_id": object["id0"].(string)}, device)
 					if err != nil {
 						log.Println(err)
