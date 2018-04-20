@@ -913,7 +913,7 @@ func main() {
 				err := query.All(&theDevices)
 				if err != nil {
 					fmt.Println(err)
-					return
+					//return
 				}
 				fmt.Println(miners)
 				for ip, miner := range miners {
@@ -931,7 +931,7 @@ func main() {
 						err = devices.Update(device, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
 						if err != nil {
 							fmt.Println(err)
-							return
+							//return
 						}
 
 						for id0, conn := range connections {
@@ -940,7 +940,7 @@ func main() {
 								if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 									log.Println(err)
 									delete(connections, id0)
-									return
+									//return
 								}
 							}
 						}
