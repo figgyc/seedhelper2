@@ -915,6 +915,7 @@ func main() {
 					fmt.Println(err)
 					return
 				}
+				fmt.Println(miners)
 				for ip, miner := range miners {
 					if miner.Before(time.Now().Add(time.Minute*-5)) == true {
 						delete(miners, ip)
@@ -956,7 +957,7 @@ func main() {
 	fmt.Println("serving on :80 and 443")
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("edge.figgyc.uk", "seedhelper.figgyc.uk"),
+		HostPolicy: autocert.HostWhitelist("seedhelper.figgyc.uk"),
 		Cache:      autocert.DirCache("."),
 	}
 	httpsSrv := &http.Server{
