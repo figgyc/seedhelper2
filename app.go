@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/CloudyKit/jet"
-	// "github.com/JulianDuniec/crc7"
 	"github.com/Tomasen/realip"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -234,7 +233,7 @@ func main() {
 
 	// init templates
 	view = jet.NewHTMLSet("./views")
-	view.SetDevelopmentMode(true)
+	// view.SetDevelopmentMode(true)
 
 	// routing
 	router := mux.NewRouter()
