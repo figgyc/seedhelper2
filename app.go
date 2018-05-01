@@ -34,6 +34,7 @@ var devices *mgo.Collection
 var lastBotInteraction time.Time
 var miners map[string]time.Time
 var iminers map[string]time.Time
+var cminers map[string]time.Time
 var ipPriority []string
 var ipBlacklist []string
 var botIP string
@@ -687,6 +688,11 @@ func main() {
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()
 		iminers[realip.FromRequest(r)] = time.Now()
+		_, ok := cminers[realip.FromRequest(r)]
+		if ok {
+			w.Write([]byte("nothing"))
+			return
+		}
 		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}})
 		count, err := query.Count()
 		if err != nil || count < 1 {
@@ -704,6 +710,11 @@ func main() {
 	})
 	// /claim/id0
 	router.HandleFunc("/claim/{id0}", func(w http.ResponseWriter, r *http.Request) {
+		_, ok := cminers[realip.FromRequest(r)]
+		if ok {
+			w.Write([]byte("nothing"))
+			return
+		}
 		id0 := mux.Vars(r)["id0"]
 		//fmt.Println(id0)
 		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now().Add(time.Hour)}})
@@ -713,6 +724,7 @@ func main() {
 		}
 		w.Write([]byte("success"))
 		miners[realip.FromRequest(r)] = time.Now()
+		cminers[realip.FromRequest(r)] = time.Now()
 		for id02, conn := range connections {
 			//fmt.Println(id0, device.ID0, "hello!")
 			if id02 == id0 {
@@ -857,6 +869,8 @@ func main() {
 			fmt.Println(err)
 			return
 		}
+
+		delete(cminers, realip.FromRequest(r))
 
 		for key, conn := range connections {
 			if key == id0 {
