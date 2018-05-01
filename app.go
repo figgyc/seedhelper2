@@ -228,6 +228,7 @@ func main() {
 	lastBotInteraction = time.Now()
 	miners = map[string]time.Time{}
 	iminers = map[string]time.Time{}
+	cminers = map[string]time.Time{}
 	ipBlacklist = strings.Split(os.Getenv("SEEDHELPER_IP_BLACKLIST"), ",")
 	ipPriority = strings.Split(os.Getenv("SEEDHELPER_IP_PRIORITY"), ",")
 	botIP = os.Getenv("SEEDHELPER_BOT_IP")
