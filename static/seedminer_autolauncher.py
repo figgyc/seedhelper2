@@ -17,7 +17,7 @@ import shutil
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "2.1"
+currentVersion = "2.1.1"
 
 # https://stackoverflow.com/a/16696317 thx
 
@@ -57,7 +57,7 @@ if os.name == 'nt':
     args['creationflags'] = 0x00000200
 # , stdout=subprocess.PIPE, universal_newlines=True)
 process = subprocess.Popen(
-    [sys.executable, "seedminer_launcher3.py", "gpu"], **args)
+    [sys.executable, "seedminer_launcher3.py", "gpu"], stdout=subprocess.PIPE, **args)
 while process.poll() == None:
     line = process.stdout.readline()
     if line != '':
