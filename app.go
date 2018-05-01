@@ -115,8 +115,8 @@ func logger(next http.Handler) http.Handler {
 }
 
 func closer(next http.Handler) http.Handler {
-	return http.handlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Url != socket {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/socket" {
 			r.Close = true
 		}
 		next.ServeHTTP(w, r)
