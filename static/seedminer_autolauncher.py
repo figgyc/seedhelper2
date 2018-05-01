@@ -44,29 +44,36 @@ if r0.text != currentVersion:
 print("Updating seedminer db...")
 os.system('"' + sys.executable + '" seedminer_launcher3.py update-db')
 
-print("Benchmarking...")
-timeA = time.time()
-timeTarget = timeA + 80
-timeB = timeTarget + 1  # failsafe
-if not os.path.isfile("impossible_part1.sed"):
-    download_file(baseurl + "/static/impossible_part1.sed",
-                  "impossible_part1.sed")
-shutil.copyfile("impossible_part1.sed", "movable_part1.sed")
-args = {}
-if os.name == 'nt':
-    args['creationflags'] = 0x00000200
-# , stdout=subprocess.PIPE, universal_newlines=True)
-process = subprocess.Popen(
-    [sys.executable, "seedminer_launcher3.py", "gpu"], stdout=subprocess.PIPE, **args)
-while process.poll() == None:
-    line = process.stdout.readline()
-    if line != '':
-        if "offset:10" in line:
-            process.kill()
-            timeB = time.time()
-if timeB > timeA:
-    print("Your computer is too slow to help Seedhelper")
-    sys.exit(0)
+if not os.path.isfile("benchmark"):
+    print("Benchmarking...")
+    timeA = time.time()
+    timeTarget = timeA + 80
+    timeB = timeTarget + 1  # failsafe
+    if not os.path.isfile("impossible_part1.sed"):
+        download_file(baseurl + "/static/impossible_part1.sed",
+                      "impossible_part1.sed")
+    shutil.copyfile("impossible_part1.sed", "movable_part1.sed")
+    args = {}
+    if os.name == 'nt':
+        args['creationflags'] = 0x00000200
+    # , stdout=subprocess.PIPE, universal_newlines=True)
+    process = subprocess.Popen(
+        [sys.executable, "seedminer_launcher3.py", "gpu"], stdout=subprocess.PIPE, universal_newlines=True, **args)
+    while process.poll() == None:
+        line = process.stdout.readline()
+        sys.stdout.write(line)
+        sys.stdout.flush()
+        if line != '':
+            if "offset:10" in line:
+                process.kill()
+                timeB = time.time()
+    if timeB > timeA:
+        print("Your computer is too slow to help Seedhelper")
+        sys.exit(0)
+else:
+    with open("benchmark", mode="w") as file:
+        file.write("1")
+        file.close()
 
 
 def signal_handler(signal, frame):
