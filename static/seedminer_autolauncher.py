@@ -1,22 +1,11 @@
 #!/usr/bin/env python3
 
-import os
-import requests
-import os.path
-import getpass
-import sys
-import signal
-import time
-import re
-import glob
-import subprocess
-import datetime
-import io
+import os, os.path, sys, signal, time, re, glob, subprocess, datetime, io, getpass, requests, shutil
 
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "1.9"
+currentVersion = "2.0"
 
 # https://stackoverflow.com/a/16696317 thx
 def download_file(url, local_filename):
@@ -40,21 +29,29 @@ if r0.text != currentVersion:
 print("Updating seedminer db...")
 os.system('"' + sys.executable + '" seedminer_launcher3.py update-db')
 
-#username = input("Username: ")
-#password = getpass.getpass("Password: ")
-#print("Logging in...")
-#r = s.post(baseurl + "/login", data={'username': username, 'password': password})
-#print(r.url)
-#if r.url == baseurl + '/home':
-#    print("Login successful")
-#else:
-#    print("Login fail")
-#    sys.exit(1)
+print("Benchmarking...")
+timeA = time.time()
+timeTarget = timeA + 80
+timeB = timeTarget + 1 # failsafe
+if not os.path.isfile("impossible_part1.sed"):
+    download_file(baseurl + "/static/impossible_part1.sed", "impossible_part1.sed")
+shutil.copyfile("impossible_part1.sed", "movable_part1.sed")
+process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"], creationflags=0x00000200)#, stdout=subprocess.PIPE, universal_newlines=True)
+while process.poll() == None:
+    line = proc.stdout.readline()
+    if line != '':
+        if "offset:10" in line:
+            process.kill()
+            timeB = time.time()
+if timeB > timeA:
+    print("Your computer is too slow to help Seedhelper")
+    sys.exit(0)
+
 
 def signal_handler(signal, frame):
         print('Exiting...')
         if currentid != "":
-            cancel = input("Kill job, requeue, or do nothing? [k/r/N]")
+            cancel = input("Kill job, requeue, or do nothing? [k/r/X]")
             p = "x"
             if cancel.lower() == "r":
                 p = "n"

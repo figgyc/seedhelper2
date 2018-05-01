@@ -114,6 +114,15 @@ func logger(next http.Handler) http.Handler {
 	})
 }
 
+func closer(next http.Handler) http.Handler {
+	return http.handlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Url != socket {
+			r.Close = true
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func filetypeFixer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Do stuff here
@@ -886,12 +895,12 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-		defer f.Close()
 		_, err = f.WriteString(filename + "\n")
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
+		f.Close()		
 
 	}).Methods("POST")
 
