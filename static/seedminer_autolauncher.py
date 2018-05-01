@@ -38,7 +38,7 @@ if not os.path.isfile("impossible_part1.sed"):
 shutil.copyfile("impossible_part1.sed", "movable_part1.sed")
 process = subprocess.Popen([sys.executable, "seedminer_launcher3.py", "gpu"], creationflags=0x00000200)#, stdout=subprocess.PIPE, universal_newlines=True)
 while process.poll() == None:
-    line = proc.stdout.readline()
+    line = process.stdout.readline()
     if line != '':
         if "offset:10" in line:
             process.kill()

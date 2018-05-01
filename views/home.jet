@@ -1,11 +1,14 @@
-{{extends "layout.jet"}}
-{{block status()}}{{ minerCount }} miners are online, {{ userCount }} users are in the mining queue, {{ miningCount }} are being mined, {{ totalCount }} total users, {{ p1Count }} got part1, {{ msCount }} got movable{{end}}
+{{extends "layout.jet"}} {{block status()}}{{ minerCount }} miners are online, {{ userCount }} users are in the mining queue,
+{{ miningCount }} are being mined, {{ totalCount }} total users, {{ p1Count }} got part1, {{ msCount }} got movable{{end}}
 {{block body()}}
 <main class="container">
     {{ if isUp == false }}
-    <div class="alert alert-danger">Seedhelper seems to be having issues. You may be stuck waiting for the bot for a while until the issue is fixed! Uploading an existing part1 and having it mined should be operational. You should ask for a friend on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a> and then upload the part1 here or bruteforce it yourself.</div>
+    <div class="alert alert-danger">Seedhelper seems to be having issues. You may be stuck waiting for the bot for a while until the issue is fixed! Uploading
+        an existing part1 and having it mined should be operational. You should ask for a friend on the
+        <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a> and then upload the part1 here or bruteforce it yourself.</div>
     {{end}}
-    <div class="alert alert-info">If you have issues, try refreshing the page, pressing "Start again" below and asking for help on the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a>.</div>
+    <div class="alert alert-info">If you have issues, try refreshing the page, pressing "Start again" below and asking for help on the
+        <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a>.</div>
     <button id="cancelButton1" class="btn">Start again</button>
     <div id="accordion">
         <div class="card">
@@ -21,18 +24,22 @@
                 <div class="card-body">
                     Welcome to Seedhelper 2! This service is supported by the people who run the bruteforce script; see the bottom of this page
                     for more info on that. You should be following
-                    <a href="https://jisagi.github.io/SeedminerGuide/">Jisagi's seedminer guide</a> to use this service. You may find it harder to get help if you aren't using this guide! To use this service,
-                    <b>type your Friend Code and your id0 in the box below</b> or upload a movable_part1.sed if you already have it.
+                    <a href="https://jisagi.github.io/SeedminerGuide/">Jisagi's seedminer guide</a> to use this service. You may find it harder to get help if you aren't using
+                    this guide! To use this service,
+                    <b>type your Friend Code and your id0 in the box below</b> or upload a movable_part1.sed if you already
+                    have it.
                     <form>
                         <div class="form-group">
-                            <label for="friendCode">Your friend code</label> <a href="#" data-toggle="tooltip" data-html="true" title="You can find your friend code in the friends list, which is the orange face on the HOME Menu of your Nintendo 3DS. Simply swipe right to your Mii's friend card. You may need to make one if you haven't already.">(how to get)</a>
+                            <label for="friendCode">Your friend code</label>
+                            <a href="#" data-toggle="tooltip" data-html="true" title="You can find your friend code in the friends list, which is the orange face on the HOME Menu of your Nintendo 3DS. Simply swipe right to your Mii's friend card. You may need to make one if you haven't already.">(how to get)</a>
                             <input required class="form-control" id="friendCode" maxlength="15" type="text" placeholder="123456789012" max="549755813887">
                             <a id="uploadp1" href="#">or upload a movable_part1.sed</a>
                             <input type="file" style="display: none" id="p1file" accept=".sed" />
                             <input type="hidden" id="part1b64" />
                         </div>
                         <div class="form-group">
-                            <label for="id0">Your ID0</label> <a href="#" data-toggle="tooltip" data-html="true" title="You can find your ID0 in the Nintendo 3DS folder on your SD card. It is the random folder name inside that folder but <b>not the folder inside that!</b> <br /><img src='https://i.imgur.com/1AeECFF.png' />">(how to get)</a>
+                            <label for="id0">Your ID0</label>
+                            <a href="#" data-toggle="tooltip" data-html="true" title="You can find your ID0 in the Nintendo 3DS folder on your SD card. It is the random folder name inside that folder but <b>not the folder inside that!</b> <br /><img src='https://i.imgur.com/1AeECFF.png' />">(how to get)</a>
                             <input required type="text" class="form-control" id="id0" maxlength="32" pattern="[a-fA-F0-9]{32}" placeholder="52f10c83610ebca1a059c0bae8255eb">
                         </div>
 
@@ -42,8 +49,12 @@
                             Your Friend Code, Part1 or ID0 is incorrect. Type it correctly, the ID0 in lowercase and the Friend Code without dashes.
                         </div>
                         <div id="fcWarning" class="alert alert-warning" role="alert" style="display: none;">
-                            Your ID0 appears to be an ID1. The ID0 is the name of the folder inside the Nintendo 3DS folder, <b>not the folder inside that!</b> Check your ID0 is correct and try again. If you are having issues finding your ID0, ask the <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a>.
-                            <br /><img src="https://i.imgur.com/1AeECFF.png" />
+                            Your ID0 appears to be an ID1. The ID0 is the name of the folder inside the Nintendo 3DS folder,
+                            <b>not the folder inside that!</b> Check your ID0 is correct and try again. If you are having issues
+                            finding your ID0, ask the
+                            <a href="https://discord.gg/C29hYvh">Nintendo Homebrew Discord</a>.
+                            <br />
+                            <img src="https://i.imgur.com/1AeECFF.png" />
                         </div>
                         <div class="progress" id="fcProgress" style="display: none;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
@@ -63,9 +74,13 @@
             </div>
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-body">
-                    <b>Add the friend code <!-- kartik 2: 2583-4750-6296--><!--figgyc -->0275-9929-0078<!--><!-- kartik 1: 0276-1393-2984-->.</b> It is connected to this website and will automatically retrieve
-                    your movable_part1 when you add it back. Simply add it back and wait for it to process your friend code.
-                    If nothing on this website changes after you add the bot, refresh the page.
+                    <b>Add the friend code
+                        <!-- kartik 2: 2583-4750-6296-->
+                        <!--figgyc -->0275-9929-0078
+                        <!-->
+                        <!-- kartik 1: 0276-1393-2984-->.</b> It is connected to this website and will automatically retrieve your movable_part1 when you
+                    add it back. Simply add it back and wait for it to process your friend code. If nothing on this website
+                    changes after you add the bot, refresh the page.
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0"
                             aria-valuemax="100" style="width: 100%">Waiting...</div>
@@ -107,14 +122,17 @@
             </div>
             <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
                 <div class="card-body">
-                    <b>Wait</b> for the bruteforce to complete. Feel free to leave the website running in the background or even close it. This may take up to an hour, but it usually lasts about 30 minutes and sometimes less. Don't worry if your GPU is not powerful because this is happening on another computer. While you wait, please check that your ID0 is correct and cancel
-                    the job if it is not, or you will be waiting forever! If you have been waiting a while and nothing has happened, try refreshing the page
+                    <b>Wait</b> for the bruteforce to complete. Feel free to leave the website running in the background or
+                    even close it. This may take up to an hour, but it usually lasts about 30 minutes and sometimes less.
+                    Don't worry if your GPU is not powerful because this is happening on another computer. While you wait,
+                    please check that your ID0 is correct and cancel the job if it is not, or you will be waiting forever!
+                    If you have been waiting a while and nothing has happened, try refreshing the page
                     <br /> ID0:
                     <span id="id0Fill"></span>
                     <br />
                     <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="bfProgress" aria-valuenow="100" aria-valuemin="0"
-                            aria-valuemax="100" style="width: 100%">Waiting...</div>
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="bfProgress" aria-valuenow="100"
+                            aria-valuemin="0" aria-valuemax="100" style="width: 100%">Waiting...</div>
                     </div>
                     <button id="cancelButton" class="btn btn-danger">Cancel</button> If you cancel the bruteforce, you will have to restart the process!
                 </div>
@@ -131,8 +149,8 @@
             </div>
             <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
                 <div class="card-body">
-                    <a href="#" id="downloadMovable">Download movable.sed</a> and go back to the guide to inject your DSiWare.
-                    Thanks to the people who run the bruteforcing script who make this service possible!
+                    <a href="#" id="downloadMovable">Download movable.sed</a> and go back to the guide to inject your DSiWare. Thanks to the people who run
+                    the bruteforcing script who make this service possible!
                     <br>
                     <button id="cancelButton3" class="btn">Do another device</button>
                 </div>
@@ -144,7 +162,7 @@
             <div class="card-header" id="headingX">
                 <h5 class="mb-0">
                     <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseX" aria-expanded="false" aria-controls="collapseX">
-                        How to support Seedhelper
+                        Mine for Seedhelper
                     </button>
                 </h5>
             </div>
@@ -170,8 +188,10 @@
                         <li>Copy seedminer_autolauncher.py and bfcl.exe to the seedminer folder.</li>
                         <li>Open an admin command prompt by opening Start, typing cmd and pressing Ctrl+Shift+Enter. Type "py
                             -m pip install requests" without the quotes and press enter.</li>
-                        <li>Shift+right click in the seedminer folder, press "Open command window here" or "Open Windows Powershell here" and type "py seedminer_autolauncher.py"
-                            to start working. Press Ctrl+C inside the command window to stop working.</li>
+                        <li>Shift+right click in the seedminer folder, press "Open command window here" or "Open Windows Powershell
+                            here" and type "py seedminer_autolauncher.py" to start working. The script will test your GPU
+                            for adequate power to help keep the service fast. Press Ctrl+C inside the command window to stop
+                            working.</li>
                     </ol>
                 </div>
             </div>
@@ -187,13 +207,21 @@
 
             <div id="collapseY" class="collapse" aria-labelledby="headingY" data-parent="#accordion2">
                 <div class="card-body">
-                    Seedhelper is developed by <a href="https://github.com/figgyc">figgyc</a> and is <a href="https://github.com/figgyc/seedhelper2">open source</a>.
-                    Seedhelper has been possible thanks to many people:
+                    Seedhelper is developed by
+                    <a href="https://github.com/figgyc">figgyc</a> and is
+                    <a href="https://github.com/figgyc/seedhelper2">open source</a>. Seedhelper has been possible thanks to many people:
                     <ul>
-                        <li><a href="https://github.com/Pirater12">@Pirater12</a> for reverse engineering frd:a and making httpc_curl to make the friend code bot possible</li>
-                        <li><a href="https://github.com/zoogie">@zoogie</a> for creating the seedminer applications and finding the vulnerability</li>
-                        <li><a href="https://github.com/Jisagi">@Jisagi</a> for creating the seedminer guide</li>
-                        <li><a href="https://github.com/jason0597">@jason0597</a>, <a href="https://github.com/knight-ryu12">@knight-ryu12</a>, <a href="https://github.com/saibotu">@saibotu</a>, and anyone who has used the service for testing and finding bugs!</li>
+                        <li>
+                            <a href="https://github.com/Pirater12">@Pirater12</a> for reverse engineering frd:a and making httpc_curl to make the friend code bot
+                            possible</li>
+                        <li>
+                            <a href="https://github.com/zoogie">@zoogie</a> for creating the seedminer applications and finding the vulnerability</li>
+                        <li>
+                            <a href="https://github.com/Jisagi">@Jisagi</a> for creating the seedminer guide</li>
+                        <li>
+                            <a href="https://github.com/jason0597">@jason0597</a>,
+                            <a href="https://github.com/knight-ryu12">@knight-ryu12</a>,
+                            <a href="https://github.com/saibotu">@saibotu</a>, and anyone who has used the service for testing and finding bugs!</li>
                     </ul>
                 </div>
             </div>
