@@ -17,7 +17,7 @@ import shutil
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "2.1.1"
+currentVersion = "2.2"
 
 # https://stackoverflow.com/a/16696317 thx
 
@@ -44,6 +44,7 @@ if r0.text != currentVersion:
 print("Updating seedminer db...")
 os.system('"' + sys.executable + '" seedminer_launcher3.py update-db')
 
+'''
 if not os.path.isfile("benchmark"):
     print("Benchmarking...")
     timeA = time.time()
@@ -74,6 +75,7 @@ else:
     with open("benchmark", mode="w") as file:
         file.write("1")
         file.close()
+'''
 
 
 def signal_handler(signal, frame):
