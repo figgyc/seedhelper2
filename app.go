@@ -115,6 +115,14 @@ func logger(next http.Handler) http.Handler {
 	})
 }
 
+func blacklist(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if contains(ipBlacklist, realip.FromRequest(r)) == false {
+			next.ServeHTTP(w, r)
+		}
+	})
+}
+
 func closer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/socket" {
@@ -253,6 +261,7 @@ func main() {
 
 	router.Use(logger)
 	router.Use(filetypeFixer)
+	router.Use(blacklist)
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate("home", make(jet.VarMap), r, w, nil)
