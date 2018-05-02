@@ -1,4 +1,8 @@
+seedhelper.figgyc.uk
+edge.figgyc.uk
 acme_account.key
 debug
 # build
 app
+static/mseds/msed_data_*
+static/mseds/list

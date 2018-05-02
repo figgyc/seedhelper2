@@ -17,7 +17,7 @@ import shutil
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
-currentVersion = "2.2"
+currentVersion = "2.1.1"
 
 # https://stackoverflow.com/a/16696317 thx
 
@@ -169,6 +169,7 @@ while True:
                     else:
                         print("Upload failed!")
                         sys.exit(1)
-    except:
+    except Exception:
         print("Error")
+        s.get(baseurl + "/cancel/" + currentid + "?kill=n")
         time.sleep(10)
