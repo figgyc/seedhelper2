@@ -238,7 +238,7 @@
 						{{else}}
 							{{miner["name"]}}
 						{{end}}</td>
-						<td>{{miner["score"].(int)}}</td>
+						<td>{{miner["score"]}}</td>
 					</tr>
 					{{end}}
 				</tbody>
