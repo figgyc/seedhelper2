@@ -223,7 +223,7 @@
                             <a href="https://github.com/knight-ryu12">@knight-ryu12</a>,
                             <a href="https://github.com/saibotu">@saibotu</a>, and anyone who has used the service for testing and finding bugs!</li>
 			<li>All Seedhelper miners including:<li>
-			<table>
+			<table class="table">
 				<thead>
 					<tr>
 						<th>Name</th>
@@ -233,8 +233,8 @@
 				<tbody>
 					{{range miner := miners}}
 					<tr>
-						<td>{{miner["name"] || "Someone"}}</td>
-						<td>{{miner["score"] || 0}}</td>
+						<td>{{if miner["name"] == nil}}Someone{{else}}{{miner["name"]}}{{end}}</td>
+						<td>{{miner["score"].(int)}}</td>
 					</tr>
 					{{end}}
 				</tbody>
