@@ -77,7 +77,7 @@
                     <b>Add the friend code
                         <!-- kartik 2: 2583-4750-6296-->
                         <!--figgyc -->0275-9929-0078
-                        <!-->
+                        <!-- -->
                         <!-- kartik 1: 0276-1393-2984-->.</b> It is connected to this website and will automatically retrieve your movable_part1 when you
                     add it back. Simply add it back and wait for it to process your friend code. If nothing on this website
                     changes after you add the bot, refresh the page.
@@ -222,6 +222,23 @@
                             <a href="https://github.com/jason0597">@jason0597</a>,
                             <a href="https://github.com/knight-ryu12">@knight-ryu12</a>,
                             <a href="https://github.com/saibotu">@saibotu</a>, and anyone who has used the service for testing and finding bugs!</li>
+			<li>All Seedhelper miners including:<li>
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Score</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{range miner := miners}}
+					<tr>
+						<td>{{miner["name"] || "Someone"}}</td>
+						<td>{{miner["score"] || 0}}</td>
+					</tr>
+					{{end}}
+				</tbody>
+			</table>
                     </ul>
                 </div>
             </div>

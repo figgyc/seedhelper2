@@ -105,6 +105,12 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 	}
 	vars.Set("totalCount", n)
 	var miners []bson.M
+	q := minerCollection.Find(bson.M{}).Limit(5)
+	err = q.All(&miners)
+	if err != nil {
+		panic(err)
+	}
+	vars.Set("miners", miners)
 	//fmt.Println(miners, len(miners))
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template
@@ -704,6 +710,30 @@ func main() {
 		}
 
 	})
+
+	// /setname
+	router.HandleFunc("/setname", func(w http.ResponseWriter, r *http.Request) {
+		name := mux.Vars(r)["name"]
+		if name == "" {
+			w.Write([]byte("error"))
+			return
+		}
+		c, err := minerCollection.Find(bson.M{"name": name}).Count()
+		if err != nil || c != 0 {
+			w.Write([]byte("name taken"))
+			return
+		}
+		_, err = minerCollection.Upsert(bson.M{"_id": realip.FromRequest(r)}, bson.M{"name": name})
+		if err == nil {
+			w.Write([]byte("success"))
+			return
+		} else {
+			w.Write([]byte("error"))
+			log.Println(err)
+			return
+		}
+	})
+
 	// /getwork
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()
