@@ -233,10 +233,10 @@
 				<tbody>
 					{{range miner := miners}}
 					<tr>
-						<td>{{if ok := miner["name"]; ok == false}}
-							Someone
-						{{else}}
+						<td>{{if _, ok := miner["name"]; ok}}
 							{{miner["name"]}}
+						{{else}}
+							Someone
 						{{end}}</td>
 						<td>{{miner["score"]}}</td>
 					</tr>
