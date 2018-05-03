@@ -31,6 +31,7 @@ import (
 var view *jet.Set
 var mgoSession mgo.Session
 var devices *mgo.Collection
+var minerCollection *mgo.Collection
 var lastBotInteraction time.Time
 var miners map[string]time.Time
 var iminers map[string]time.Time
@@ -52,6 +53,13 @@ type Device struct {
 	MSed       [0x140]byte
 	MSData     [12]byte
 	ExpiryTime time.Time `bson:",omitempty"`
+	Miner      string
+}
+
+// Miner : struct for tracking miners
+type Miner struct {
+	IP    string `bson:"_id"`
+	Score int
 }
 
 func contains(s []string, e string) bool {
@@ -96,6 +104,7 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 		panic(err)
 	}
 	vars.Set("totalCount", n)
+	var miners []bson.M
 	//fmt.Println(miners, len(miners))
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template
@@ -249,6 +258,7 @@ func main() {
 	defer mgoSession.Close()
 
 	devices = mgoSession.DB("main").C("devices")
+	minerCollection = mgoSession.DB("main").C("miners")
 
 	// init templates
 	view = jet.NewHTMLSet("./views")
@@ -727,7 +737,7 @@ func main() {
 		// }
 		id0 := mux.Vars(r)["id0"]
 		//fmt.Println(id0)
-		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now().Add(time.Hour)}})
+		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now().Add(time.Hour), "miner": realip.FromRequest(r)}})
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -881,6 +891,7 @@ func main() {
 		}
 
 		delete(cminers, realip.FromRequest(r))
+		minerCollection.Upsert(bson.M{"_id": realip.FromRequest(r)}, bson.M{"$inc": bson.M{"score": 5}})
 
 		for key, conn := range connections {
 			if key == id0 {
@@ -965,6 +976,8 @@ func main() {
 							fmt.Println(err)
 							//return
 						}
+
+						minerCollection.Upsert(bson.M{"_id": device.Miner}, bson.M{"$inc": bson.M{"score": -3}})
 
 						for id0, conn := range connections {
 							if id0 == device.ID0 {
