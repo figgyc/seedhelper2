@@ -104,13 +104,13 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 		panic(err)
 	}
 	vars.Set("totalCount", n)
-	var miners []bson.M
+	var tminers []bson.M
 	q := minerCollection.Find(bson.M{}).Limit(5)
-	err = q.All(&miners)
+	err = q.All(&tminers)
 	if err != nil {
 		panic(err)
 	}
-	vars.Set("miners", miners)
+	vars.Set("miners", tminers)
 	//fmt.Println(miners, len(miners))
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template
