@@ -726,11 +726,10 @@ func main() {
 		_, err = minerCollection.Upsert(bson.M{"_id": realip.FromRequest(r)}, bson.M{"name": name})
 		if err != nil {
 			w.Write([]byte("error"))
+			w.Write([]byte(err.Error()))
 			log.Println(err)
-			return
 		} else {
 			w.Write([]byte("success"))
-			return
 		}
 	})
 
