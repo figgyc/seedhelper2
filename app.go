@@ -724,7 +724,7 @@ func main() {
 			w.Write([]byte("name taken"))
 			return
 		}
-		_, err = minerCollection.Upsert(bson.M{"_id": realip.FromRequest(r)}, bson.M{"name": name})
+		_, err = minerCollection.Upsert(bson.M{"_id": realip.FromRequest(r)}, bson.M{"$set": bson.M{"name": name}})
 		if err != nil {
 			w.Write([]byte("error"))
 			w.Write([]byte(err.Error()))
