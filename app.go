@@ -715,7 +715,7 @@ func main() {
 	router.HandleFunc("/setname", func(w http.ResponseWriter, r *http.Request) {
 		name := mux.Vars(r)["name"]
 		if name == "" {
-			w.Write([]byte("error"))
+			w.Write([]byte("specify a name"))
 			return
 		}
 		c, err := minerCollection.Find(bson.M{"name": name}).Count()
