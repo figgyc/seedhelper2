@@ -35,7 +35,6 @@ var minerCollection *mgo.Collection
 var lastBotInteraction time.Time
 var miners map[string]time.Time
 var iminers map[string]time.Time
-var cminers map[string]int
 var ipPriority []string
 var ipBlacklist []string
 var botIP string
@@ -251,7 +250,6 @@ func main() {
 	lastBotInteraction = time.Now()
 	miners = map[string]time.Time{}
 	iminers = map[string]time.Time{}
-	cminers = map[string]int{}
 	ipBlacklist = strings.Split(os.Getenv("SEEDHELPER_IP_BLACKLIST"), ",")
 	ipPriority = strings.Split(os.Getenv("SEEDHELPER_IP_PRIORITY"), ",")
 	botIP = os.Getenv("SEEDHELPER_BOT_IP")
@@ -738,7 +736,7 @@ func main() {
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()
 		iminers[realip.FromRequest(r)] = time.Now()
-		ok := cminers[realip.FromRequest(r)]
+		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": false, "expirtyime": bson.M{"$ne": time.Time{}}}).Count()
 		if ok > 0 {
 			w.Write([]byte("nothing"))
 			return
@@ -760,7 +758,7 @@ func main() {
 	})
 	// /claim/id0
 	router.HandleFunc("/claim/{id0}", func(w http.ResponseWriter, r *http.Request) {
-		ok := cminers[realip.FromRequest(r)]
+		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": false, "expirtyime": bson.M{"$ne": time.Time{}}}).Count()
 		if ok > 0 {
 			w.Write([]byte("nothing"))
 			return
@@ -774,7 +772,6 @@ func main() {
 		}
 		w.Write([]byte("success"))
 		miners[realip.FromRequest(r)] = time.Now()
-		cminers[realip.FromRequest(r)] = 1
 		for id02, conn := range connections {
 			//log.Println(id0, device.ID0, "hello!")
 			if id02 == id0 {
@@ -920,7 +917,6 @@ func main() {
 			return
 		}
 
-		cminers[realip.FromRequest(r)] = 0
 		minerCollection.Upsert(bson.M{"_id": realip.FromRequest(r)}, bson.M{"$inc": bson.M{"score": 5}})
 
 		for key, conn := range connections {
@@ -1007,7 +1003,6 @@ func main() {
 							//return
 						}
 
-						cminers[device.Miner] = 0
 						minerCollection.Upsert(bson.M{"_id": device.Miner}, bson.M{"$inc": bson.M{"score": -3}})
 
 						for id0, conn := range connections {
