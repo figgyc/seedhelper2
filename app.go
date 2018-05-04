@@ -713,8 +713,8 @@ func main() {
 
 	// /setname
 	router.HandleFunc("/setname", func(w http.ResponseWriter, r *http.Request) {
-		name := mux.Vars(r)["name"]
-		if name == "" {
+		name, ok := r.URL.Query()["name"]
+		if ok == false || name == "" {
 			w.Write([]byte("specify a name"))
 			return
 		}
