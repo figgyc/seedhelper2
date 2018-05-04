@@ -35,7 +35,7 @@ var minerCollection *mgo.Collection
 var lastBotInteraction time.Time
 var miners map[string]time.Time
 var iminers map[string]time.Time
-var cminers map[string]time.Time
+var cminers map[string]int
 var ipPriority []string
 var ipBlacklist []string
 var botIP string
@@ -111,7 +111,7 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 		panic(err)
 	}
 	vars.Set("miners", tminers)
-	//fmt.Println(miners, len(miners))
+	//log.Println(miners, len(miners))
 	if err = t.Execute(writer, vars, nil); err != nil {
 		// error when executing template
 		panic(err)
@@ -251,11 +251,11 @@ func main() {
 	lastBotInteraction = time.Now()
 	miners = map[string]time.Time{}
 	iminers = map[string]time.Time{}
-	cminers = map[string]time.Time{}
+	cminers = map[string]int{}
 	ipBlacklist = strings.Split(os.Getenv("SEEDHELPER_IP_BLACKLIST"), ",")
 	ipPriority = strings.Split(os.Getenv("SEEDHELPER_IP_PRIORITY"), ",")
 	botIP = os.Getenv("SEEDHELPER_BOT_IP")
-	fmt.Println(ipBlacklist, ipPriority)
+	log.Println(ipBlacklist, ipPriority)
 	// initialize mongo
 	mgoSession, err := mgo.Dial("localhost")
 	if err != nil {
@@ -323,7 +323,7 @@ func main() {
 				if object["id0"] == nil {
 					//return
 				}
-				//fmt.Println(object["part1"], "packet")
+				//log.Println(object["part1"], "packet")
 				/*isRegistered := false
 				for _, v := range connections {
 					if v == conn {
@@ -452,7 +452,7 @@ func main() {
 						}
 						continue
 					}
-					fmt.Println(fc)
+					log.Println(fc)
 					device := bson.M{"friendcode": uint64(fc), "hasadded": false, "haspart1": false}
 					_, err = devices.Upsert(bson.M{"_id": object["id0"].(string)}, device)
 					if err != nil {
@@ -467,7 +467,7 @@ func main() {
 
 				} else {
 					// checc
-					//fmt.Println("check")
+					//log.Println("check")
 					query := devices.Find(bson.M{"_id": object["id0"].(string)})
 					count, err := query.Count()
 					if err != nil {
@@ -519,7 +519,7 @@ func main() {
 							}
 						}
 					} else {
-						fmt.Println("empty id0 to socket, dropped DB?")
+						log.Println("empty id0 to socket, dropped DB?")
 						//return
 					}
 				}
@@ -576,7 +576,7 @@ func main() {
 		}
 		fc := uint64(a)
 
-		//fmt.Println(r, &r)
+		//log.Println(r, &r)
 
 		err = devices.Update(bson.M{"friendcode": fc, "hasadded": false}, bson.M{"$set": bson.M{"hasadded": true}})
 		if err != nil { // && err != mgo.ErrNotFound {
@@ -594,7 +594,7 @@ func main() {
 			return
 		}
 		for id0, conn := range connections {
-			//fmt.Println(id0, device.ID0, "hello!")
+			//log.Println(id0, device.ID0, "hello!")
 			if id0 == device.ID0 {
 				msg := "{\"status\": \"friendCodeAdded\"}"
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
@@ -643,7 +643,7 @@ func main() {
 		x[0] = 0x00
 		x[1] = 0x00
 		x[2] = 0x00
-		fmt.Println(fc, a, b, lfcs, x, sliceLFCS)
+		log.Println(fc, a, b, lfcs, x, sliceLFCS)
 		err = devices.Update(bson.M{"friendcode": fc, "haspart1": false}, bson.M{"$set": bson.M{"haspart1": true, "lfcs": x}})
 		if err != nil && err != mgo.ErrNotFound {
 			w.Write([]byte("fail"))
@@ -681,7 +681,7 @@ func main() {
 	// /cancel/id0
 	router.HandleFunc("/cancel/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
-		fmt.Println(id0)
+		log.Println(id0)
 		kill := false
 
 		yn, ok := r.URL.Query()["kill"]
@@ -738,11 +738,11 @@ func main() {
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()
 		iminers[realip.FromRequest(r)] = time.Now()
-		// _, ok := cminers[realip.FromRequest(r)]
-		// if ok {
-		// 	w.Write([]byte("nothing"))
-		// 	return
-		// }
+		ok := cminers[realip.FromRequest(r)]
+		if ok > 0 {
+			w.Write([]byte("nothing"))
+			return
+		}
 		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}})
 		count, err := query.Count()
 		if err != nil || count < 1 {
@@ -753,30 +753,30 @@ func main() {
 		err = query.One(&aDevice)
 		if err != nil {
 			w.Write([]byte("nothing"))
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		w.Write([]byte(aDevice.ID0))
 	})
 	// /claim/id0
 	router.HandleFunc("/claim/{id0}", func(w http.ResponseWriter, r *http.Request) {
-		//_, ok := cminers[realip.FromRequest(r)]
-		//if ok {
-		//	w.Write([]byte("nothing"))
-		//	return
-		// }
+		ok := cminers[realip.FromRequest(r)]
+		if ok > 0 {
+			w.Write([]byte("nothing"))
+			return
+		}
 		id0 := mux.Vars(r)["id0"]
-		//fmt.Println(id0)
+		//log.Println(id0)
 		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now().Add(time.Hour), "miner": realip.FromRequest(r)}})
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		w.Write([]byte("success"))
 		miners[realip.FromRequest(r)] = time.Now()
-		cminers[realip.FromRequest(r)] = time.Now()
+		cminers[realip.FromRequest(r)] = 1
 		for id02, conn := range connections {
-			//fmt.Println(id0, device.ID0, "hello!")
+			//log.Println(id0, device.ID0, "hello!")
 			if id02 == id0 {
 				msg := "{\"status\": \"bruteforcing\"}"
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
@@ -796,14 +796,14 @@ func main() {
 		count, err := query.Count()
 		if err != nil || count < 1 {
 			w.Write([]byte("error"))
-			fmt.Println("z", err, count)
+			log.Println("z", err, count)
 			return
 		}
 		var device Device
 		err = query.One(&device)
 		if err != nil || device.HasPart1 == false {
 			w.Write([]byte("error"))
-			fmt.Println("a", err)
+			log.Println("a", err)
 			return
 		}
 		buf := bytes.NewBuffer(make([]byte, 0, 0x1000))
@@ -812,25 +812,25 @@ func main() {
 		_, err = buf.Write(leLFCS)
 		if err != nil {
 			w.Write([]byte("error"))
-			fmt.Println("b", err)
+			log.Println("b", err)
 			return
 		}
 		_, err = buf.Write(make([]byte, 0x8))
 		if err != nil {
 			w.Write([]byte("error"))
-			fmt.Println("c", err)
+			log.Println("c", err)
 			return
 		}
 		_, err = buf.Write([]byte(device.ID0))
 		if err != nil {
 			w.Write([]byte("error"))
-			fmt.Println("d", err)
+			log.Println("d", err)
 			return
 		}
 		_, err = buf.Write(make([]byte, 0xFD0))
 		if err != nil {
 			w.Write([]byte("error"))
-			fmt.Println("e", err)
+			log.Println("e", err)
 			return
 		}
 		w.Header().Set("Content-Type", "application/octet-stream")
@@ -845,14 +845,14 @@ func main() {
 		count, err := query.Count()
 		if err != nil || count < 1 {
 			w.Write([]byte("error"))
-			fmt.Println("z", err, count)
+			log.Println("z", err, count)
 			return
 		}
 		var device Device
 		err = query.One(&device)
 		if err != nil || device.HasPart1 == false || device.HasMovable == true {
 			w.Write([]byte("error"))
-			fmt.Println("a", err)
+			log.Println("a", err)
 			return
 		}
 		if device.WantsBF == false || device.ExpiryTime.Before(time.Now()) == true {
@@ -868,7 +868,7 @@ func main() {
 		query := devices.Find(bson.M{"_id": id0})
 		count, err := query.Count()
 		if err != nil || count < 1 {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		var device Device
@@ -880,7 +880,7 @@ func main() {
 		buf := bytes.NewBuffer(make([]byte, 0, 0x140))
 		_, err = buf.Write(device.MSed[:])
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		w.Header().Set("Content-Type", "application/octet-stream")
@@ -892,19 +892,19 @@ func main() {
 		id0 := mux.Vars(r)["id0"]
 		file, header, err := r.FormFile("movable")
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		if header.Size != 0x120 && header.Size != 0x140 {
 			w.WriteHeader(400)
 			w.Write([]byte("error"))
-			fmt.Println(header.Size)
+			log.Println(header.Size)
 			return
 		}
 		var movable [0x120]byte
 		_, err = file.Read(movable[:])
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -912,15 +912,15 @@ func main() {
 		keyy := movable[0x110:0x11F]
 		sha := sha256.Sum256(keyy)
 		testid0 := fmt.Sprintf("%08x%08x%08x%08x", sha[0:4], sha[4:8], sha[8:12], sha[12:16])
-		fmt.Println("id0check:", hex.EncodeToString(keyy), hex.EncodeToString(sha[:]), testid0, id0)
+		log.Println("id0check:", hex.EncodeToString(keyy), hex.EncodeToString(sha[:]), testid0, id0)
 
 		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"msed": movable, "hasmovable": true, "expirytime": time.Time{}, "wantsbf": false}})
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
-		delete(cminers, realip.FromRequest(r))
+		cminers[realip.FromRequest(r)] = 0
 		minerCollection.Upsert(bson.M{"_id": realip.FromRequest(r)}, bson.M{"$inc": bson.M{"score": 5}})
 
 		for key, conn := range connections {
@@ -939,30 +939,30 @@ func main() {
 
 		file2, header2, err := r.FormFile("msed")
 		if header2.Size != 12 {
-			fmt.Println(header.Size)
+			log.Println(header.Size)
 			return
 		}
 		var msed [12]byte
 		_, err = file2.Read(msed[:])
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
-		fmt.Println(header2.Filename)
+		log.Println(header2.Filename)
 		filename := "msed_data_" + id0 + ".bin"
 		err = ioutil.WriteFile("static/mseds/"+filename, msed[:], 0644)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		f, err := os.OpenFile("static/mseds/list", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		_, err = f.WriteString(filename + "\n")
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		f.Close()
@@ -980,15 +980,15 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				fmt.Println("running task")
+				log.Println("running task")
 				query := devices.Find(bson.M{"expirytime": bson.M{"$ne": time.Time{}}})
 				var theDevices []Device
 				err := query.All(&theDevices)
 				if err != nil {
-					fmt.Println(err)
+					log.Println(err)
 					//return
 				}
-				fmt.Println(miners)
+				log.Println(miners)
 				for ip, miner := range miners {
 					if miner.Before(time.Now().Add(time.Minute*-5)) == true {
 						delete(miners, ip)
@@ -1003,10 +1003,11 @@ func main() {
 					if (device.HasMovable != true && device.WantsBF == true && device.ExpiryTime != time.Time{} && device.ExpiryTime.Before(time.Now()) == true) {
 						err = devices.Update(device, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
 						if err != nil {
-							fmt.Println(err)
+							log.Println(err)
 							//return
 						}
 
+						cminers[device.Miner] = 0
 						minerCollection.Upsert(bson.M{"_id": device.Miner}, bson.M{"$inc": bson.M{"score": -3}})
 
 						for id0, conn := range connections {
@@ -1019,7 +1020,7 @@ func main() {
 								}
 							}
 						}
-						fmt.Println(device.ID0, "job has expired")
+						log.Println(device.ID0, "job has expired")
 					}
 				}
 			case <-quit:
@@ -1029,7 +1030,7 @@ func main() {
 		}
 	}()
 
-	fmt.Println("serving on :80 and 443")
+	log.Println("serving on :80 and 443")
 	m := &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
 		HostPolicy: autocert.HostWhitelist("seedhelper.figgyc.uk"),
