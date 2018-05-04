@@ -765,7 +765,7 @@ func main() {
 		}
 		id0 := mux.Vars(r)["id0"]
 		//log.Println(id0)
-		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now().Add(time.Hour), "miner": realip.FromRequest(r)}})
+		err = devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"expirytime": time.Now().Add(time.Hour), "miner": realip.FromRequest(r)}})
 		if err != nil {
 			log.Println(err)
 			return
