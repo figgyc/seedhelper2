@@ -123,7 +123,7 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 func logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Do stuff here
-		log.Println(r)
+		log.Println(r.URL, r.Method, realip.FromRequest(r))
 		// Call the next handler, which can be another middleware in the chain, or the final handler.
 		next.ServeHTTP(w, r)
 	})
