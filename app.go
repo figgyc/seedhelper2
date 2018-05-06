@@ -736,7 +736,7 @@ func main() {
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()
 		iminers[realip.FromRequest(r)] = time.Now()
-		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": false, "expirtyime": bson.M{"$ne": time.Time{}}}).Count()
+		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": false, "expirytime": bson.M{"$ne": time.Time{}}}).Count()
 		if ok > 0 {
 			w.Write([]byte("nothing"))
 			return
@@ -758,7 +758,7 @@ func main() {
 	})
 	// /claim/id0
 	router.HandleFunc("/claim/{id0}", func(w http.ResponseWriter, r *http.Request) {
-		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": false, "expirtyime": bson.M{"$ne": time.Time{}}}).Count()
+		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": false, "expirytime": bson.M{"$ne": time.Time{}}}).Count()
 		if ok > 0 {
 			w.Write([]byte("nothing"))
 			return
