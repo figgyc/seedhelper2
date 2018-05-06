@@ -133,6 +133,9 @@ func blacklist(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if contains(ipBlacklist, realip.FromRequest(r)) == false {
 			next.ServeHTTP(w, r)
+		} else {
+			w.WriteHeader(403)
+			w.Write([]byte("You have been banned from Seedhelper. This is probably because your script is glitching out. If you think you should be unbanned then find figgyc on Discord."))
 		}
 	})
 }
