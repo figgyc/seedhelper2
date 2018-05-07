@@ -998,8 +998,8 @@ func main() {
 			select {
 			case <-ticker.C:
 				log.Println("running task")
-				query := devices.Find(bson.M{"expirytime": bson.M{"$ne": time.Time{}}})
-				var theDevices []Device
+				query := devices.Find(bson.M{"wantsbf": true, "hasmovable": bson.M{"$ne": true}, "expirytime": bson.M{"$ne": time.Time{}, "$lt": time.Now()}})
+				var theDevices []bson.M
 				err := query.All(&theDevices)
 				if err != nil {
 					log.Println(err)
@@ -1017,26 +1017,24 @@ func main() {
 					}
 				}
 				for _, device := range theDevices {
-					if (device.HasMovable != true && device.WantsBF == true && device.ExpiryTime != time.Time{} && device.ExpiryTime.Before(time.Now()) == true) {
-						err = devices.Update(device, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
-						if err != nil {
-							log.Println(err)
-							//return
-						}
+					err = devices.Update(bson.M{"_id": device["_id"]}, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
+					if err != nil {
+						log.Println(err)
+						//return
+					}
 
-						minerCollection.Upsert(bson.M{"_id": device.Miner}, bson.M{"$inc": bson.M{"score": -3}})
+					minerCollection.Upsert(bson.M{"_id": device["mimer"]}, bson.M{"$inc": bson.M{"score": -3}})
 
-						for id0, conn := range connections {
-							if id0 == device.ID0 {
-								if err := conn.WriteMessage(websocket.TextMessage, buildMessage("flag")); err != nil {
-									log.Println(err)
-									delete(connections, id0)
-									//return
-								}
+					for id0, conn := range connections {
+						if id0 == device["_id"] {
+							if err := conn.WriteMessage(websocket.TextMessage, buildMessage("flag")); err != nil {
+								log.Println(err)
+								delete(connections, id0)
+								//return
 							}
 						}
-						log.Println(device.ID0, "job has expired")
 					}
+					log.Println(device["_id"], "job has expired")
 				}
 			case <-quit:
 				ticker.Stop()
