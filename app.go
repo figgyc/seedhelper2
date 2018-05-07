@@ -36,7 +36,6 @@ var lastBotInteraction time.Time
 var miners map[string]time.Time
 var iminers map[string]time.Time
 var ipPriority []string
-var ipBlacklist []string
 var botIP string
 var connections map[string]*websocket.Conn
 
@@ -57,8 +56,9 @@ type Device struct {
 
 // Miner : struct for tracking miners
 type Miner struct {
-	IP    string `bson:"_id"`
-	Score int
+	IP     string `bson:"_id"`
+	Score  int
+	Banned bool
 }
 
 func contains(s []string, e string) bool {
@@ -131,7 +131,8 @@ func logger(next http.Handler) http.Handler {
 
 func blacklist(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if contains(ipBlacklist, realip.FromRequest(r)) == false {
+		c, err := minerCollection.Find(bson.M{"_id": realip.FromRequest(r), "banned": true}).Count()
+		if c < 1 {
 			next.ServeHTTP(w, r)
 		} else {
 			w.WriteHeader(403)
@@ -244,19 +245,18 @@ func checkIfID1(id1s string) bool {
 			}
 		}*/
 
-	// TODO: mdt check
 	// zoogie said that he thinks this is reliable, idk but whatever
 	return cid[15] == byte(0x00) && (cid[1] == byte(0x00) || cid[1] == byte(0x01))
 }
 
 func main() {
+	log.SetFlags(log.Lshortfile)
 	lastBotInteraction = time.Now()
 	miners = map[string]time.Time{}
 	iminers = map[string]time.Time{}
-	ipBlacklist = strings.Split(os.Getenv("SEEDHELPER_IP_BLACKLIST"), ",")
 	ipPriority = strings.Split(os.Getenv("SEEDHELPER_IP_PRIORITY"), ",")
 	botIP = os.Getenv("SEEDHELPER_BOT_IP")
-	log.Println(ipBlacklist, ipPriority)
+	log.Println(ipPriority)
 	// initialize mongo
 	mgoSession, err := mgo.Dial("localhost")
 	if err != nil {
