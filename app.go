@@ -740,7 +740,7 @@ func main() {
 			w.Write([]byte("specify a name"))
 			return
 		}
-		c, err := minerCollection.Find(bson.M{"name": name}).Count()
+		c, err := minerCollection.Find(bson.M{"_id": bson.M{"$ne": realip.FromRequest(r)}, "name": name}).Count()
 		if err != nil || c != 0 {
 			w.Write([]byte("name taken"))
 			return
@@ -874,7 +874,7 @@ func main() {
 			log.Println("a", err)
 			return
 		}
-		if device.WantsBF == false || device.ExpiryTime.Before(time.Now()) == true {
+		if device.WantsBF == false || device.ExpiryTime.Before(time.Now()) == true || device.Miner != realip.FromRequest(r) {
 			w.Write([]byte("error"))
 			return
 		}
