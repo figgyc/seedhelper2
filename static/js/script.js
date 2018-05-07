@@ -80,6 +80,12 @@ socket.addEventListener("open", (e) => {
             id0: localStorage.getItem("id0")
         }))
     }
+    setInterval(() => {
+        // send id0 packet, its a good fallback as well as providing 'live' stats
+        socket.send(JSON.stringify({
+            id0: localStorage.getItem("id0")
+        }))
+    }, 60000)
 })
 
 socket.addEventListener("close", () => {

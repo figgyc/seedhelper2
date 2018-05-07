@@ -393,8 +393,7 @@ func main() {
 					}
 
 					if valid == false {
-						msg := "{\"status\": \"friendCodeInvalid\"}"
-						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+						if err := conn.WriteMessage(websocket.TextMessage, buildMessage("friendCodeInvalid")); err != nil {
 							log.Println(err)
 							return
 						}
@@ -411,16 +410,14 @@ func main() {
 					copy(lfcsArray[:], lfcsSlice[:])
 					var checkArray [8]byte
 					if lfcsArray == checkArray {
-						msg := "{\"status\": \"friendCodeInvalid\"}"
-						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+						if err := conn.WriteMessage(websocket.TextMessage, buildMessage("friendCodeInvalid")); err != nil {
 							log.Println(err)
 							return
 						}
 						continue
 					}
 					if object["defoID0"] != "yes" && checkIfID1(object["id0"].(string)) {
-						msg := "{\"status\": \"couldBeID1\"}"
-						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+						if err := conn.WriteMessage(websocket.TextMessage, buildMessage("couldBeID1")); err != nil {
 							log.Println(err)
 							return
 						}
@@ -432,8 +429,7 @@ func main() {
 						log.Println(err)
 						//return
 					}
-					msg := "{\"status\": \"queue\"}"
-					if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+					if err := conn.WriteMessage(websocket.TextMessage, buildMessage("queue")); err != nil {
 						log.Println(err)
 						//return
 					}
@@ -474,16 +470,14 @@ func main() {
 					}
 
 					if valid == false {
-						msg := "{\"status\": \"friendCodeInvalid\"}"
-						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+						if err := conn.WriteMessage(websocket.TextMessage, buildMessage("friendCodeInvalid")); err != nil {
 							log.Println(err)
 							return
 						}
 						continue
 					}
 					if object["defoID0"] != "yes" && checkIfID1(object["id0"].(string)) == true {
-						msg := "{\"status\": \"couldBeID1\"}"
-						if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+						if err := conn.WriteMessage(websocket.TextMessage, buildMessage("couldBeID1")); err != nil {
 							log.Println(err)
 							return
 						}
@@ -496,8 +490,7 @@ func main() {
 						log.Println(err)
 						//return
 					}
-					msg := "{\"status\": \"friendCodeProcessing\"}"
-					if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+					if err := conn.WriteMessage(websocket.TextMessage, buildMessage("friendCodeProcessing")); err != nil {
 						log.Println(err)
 						//return
 					}
@@ -519,38 +512,32 @@ func main() {
 							//return
 						}
 						if device.HasMovable == true {
-							msg := "{\"status\": \"done\"}"
-							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							if err := conn.WriteMessage(websocket.TextMessage, buildMessage("done")); err != nil {
 								log.Println(err)
 								//return
 							}
 						} else if (device.ExpiryTime != time.Time{}) {
-							msg := "{\"status\": \"bruteforcing\"}"
-							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							if err := conn.WriteMessage(websocket.TextMessage, buildMessage("bruteforcing")); err != nil {
 								log.Println(err)
 								//return
 							}
 						} else if device.WantsBF == true {
-							msg := "{\"status\": \"queue\"}"
-							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							if err := conn.WriteMessage(websocket.TextMessage, buildMessage("queue")); err != nil {
 								log.Println(err)
 								//return
 							}
 						} else if device.HasPart1 == true {
-							msg := "{\"status\": \"movablePart1\"}"
-							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							if err := conn.WriteMessage(websocket.TextMessage, buildMessage("movablePart1")); err != nil {
 								log.Println(err)
 								//return
 							}
 						} else if device.HasAdded == true {
-							msg := "{\"status\": \"friendCodeAdded\"}"
-							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							if err := conn.WriteMessage(websocket.TextMessage, buildMessage("friendCodeAdded")); err != nil {
 								log.Println(err)
 								//return
 							}
 						} else {
-							msg := "{\"status\": \"friendCodeProcessing\"}"
-							if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+							if err := conn.WriteMessage(websocket.TextMessage, buildMessage("friendCodeProcessing")); err != nil {
 								log.Println(err)
 								//return
 							}
@@ -633,8 +620,7 @@ func main() {
 		for id0, conn := range connections {
 			//log.Println(id0, device.ID0, "hello!")
 			if id0 == device.ID0 {
-				msg := "{\"status\": \"friendCodeAdded\"}"
-				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+				if err := conn.WriteMessage(websocket.TextMessage, buildMessage("friendCodeAdded")); err != nil {
 					delete(connections, id0)
 					//w.Write([]byte("fail"))
 					log.Println(err)
@@ -699,8 +685,7 @@ func main() {
 		}
 		for id0, conn := range connections {
 			if id0 == device.ID0 {
-				msg := "{\"status\": \"movablePart1\"}"
-				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+				if err := conn.WriteMessage(websocket.TextMessage, buildMessage("movablePart1")); err != nil {
 					log.Println(err)
 					delete(connections, id0)
 					//w.Write([]byte("fail"))
@@ -737,8 +722,7 @@ func main() {
 
 		for id01, conn := range connections {
 			if id0 == id01 {
-				msg := "{\"status\": \"flag\"}"
-				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+				if err := conn.WriteMessage(websocket.TextMessage, buildMessage("flag")); err != nil {
 					log.Println(err)
 					delete(connections, id0)
 					return
@@ -814,8 +798,7 @@ func main() {
 		for id02, conn := range connections {
 			//log.Println(id0, device.ID0, "hello!")
 			if id02 == id0 {
-				msg := "{\"status\": \"bruteforcing\"}"
-				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+				if err := conn.WriteMessage(websocket.TextMessage, buildMessage("bruteforcing")); err != nil {
 					delete(connections, id0)
 					//w.Write([]byte("fail"))
 					log.Println(err)
@@ -960,8 +943,7 @@ func main() {
 
 		for key, conn := range connections {
 			if key == id0 {
-				msg := "{\"status\": \"done\"}"
-				if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+				if err := conn.WriteMessage(websocket.TextMessage, buildMessage("done")); err != nil {
 					log.Println(err)
 					delete(connections, id0)
 					//w.Write([]byte("fail"))
@@ -1046,8 +1028,7 @@ func main() {
 
 						for id0, conn := range connections {
 							if id0 == device.ID0 {
-								msg := "{\"status\": \"flag\"}"
-								if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+								if err := conn.WriteMessage(websocket.TextMessage, buildMessage("flag")); err != nil {
 									log.Println(err)
 									delete(connections, id0)
 									//return
