@@ -100,23 +100,25 @@ socket.addEventListener("error", () => {
 })
 
 socket.addEventListener("message", (e) => {
-    //console.log("hey!", e.data, JSON.parse(e.data).status)
-    if (JSON.parse(e.data).status == "friendCodeAdded") {
+    let data = JSON.parse(e.data)
+    document.getElementById("statusText").innerText = `${data.minerCount} miners are online, ${data.userCount} users in the mining queue, ${data.miningCount} are being mined, ${data.totalCount} total users, ${data.p1count} got part1, ${data.msCount} got movable`
+    //console.log("hey!", e.data, data.status)
+    if (data.status == "friendCodeAdded") {
         /* 
             Step 2: tell the user to add the bot
         */
         document.getElementById("collapseOne").classList.remove("show")
         document.getElementById("collapseTwo").classList.add("show")
     }
-    if (JSON.parse(e.data).status == "friendCodeProcessing") {
+    if (data.status == "friendCodeProcessing") {
         document.getElementById("fcProgress").style.display = "block"
     }
-    if (JSON.parse(e.data).status == "friendCodeInvalid") {
+    if (data.status == "friendCodeInvalid") {
         document.getElementById("fcProgress").style.display = "none"
         document.getElementById("fcError").style.display = "block"
         document.getElementById("beginButton").disabled = false
     }
-    if (JSON.parse(e.data).status == "movablePart1") {
+    if (data.status == "movablePart1") {
         /*
             Step 3: ask user if they or worker wants to BF
             continue button
@@ -128,7 +130,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("downloadPart1").href = "/part1/" + localStorage.getItem("id0")
         // document.getElementById("downloadPart1").click()
     }
-    if (JSON.parse(e.data).status == "done") {
+    if (data.status == "done") {
         /* 
             Step 5: done! 
             downloadMovable a
@@ -140,7 +142,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFive").classList.add("show")
         document.getElementById("downloadMovable").href = "/movable/" + localStorage.getItem("id0")
     }
-    if (JSON.parse(e.data).status == "flag") {
+    if (data.status == "flag") {
         /* 
             Step -1: flag
         */
@@ -152,7 +154,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("fcError").style.display = "block"
         document.getElementById("fcError").innerText = "Your movable.sed took to long to bruteforce. This is most likely because your ID0 was incorrect. Please make sure it is correct by asking for help."
     }
-    if (JSON.parse(e.data).status == "queue") {
+    if (data.status == "queue") {
         /* 
             Step 4
         */
@@ -165,7 +167,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("id0Fill").innerText = localStorage.getItem("id0")
         //document.getElementById("bfProgress").innerText = "Bruteforcing..."
     }
-    if (JSON.parse(e.data).status == "bruteforcing") {
+    if (data.status == "bruteforcing") {
         /* 
             Step 4.1
         */
@@ -178,7 +180,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("id0Fill").innerText = localStorage.getItem("id0")
         document.getElementById("bfProgress").innerText = "Bruteforcing..."
     }
-    if (JSON.parse(e.data).status == "couldBeID1") {
+    if (data.status == "couldBeID1") {
         document.getElementById("fcProgress").style.display = "none"
         document.getElementById("fcWarning").style.display = "block"
     }

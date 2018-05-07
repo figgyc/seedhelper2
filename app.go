@@ -70,6 +70,42 @@ func contains(s []string, e string) bool {
 	return false
 }
 
+func buildMessage(command string) []byte {
+	var message map[string]interface{}
+	message["status"] = command
+	message["minerCount"] = len(miners)
+	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": time.Time{}}).Count()
+	if err != nil {
+		panic(err)
+	}
+	message["userCount"] = c
+	b, err := devices.Find(bson.M{"hasmovable": bson.M{"$ne": true}, "haspart1": true, "wantsbf": true, "expirytime": bson.M{"$gt": time.Now()}}).Count()
+	if err != nil {
+		panic(err)
+	}
+	message["miningCount"] = b
+	a, err := devices.Find(bson.M{"haspart1": true}).Count()
+	if err != nil {
+		panic(err)
+	}
+	message["p1Count"] = a
+	z, err := devices.Find(bson.M{"hasmovable": true}).Count()
+	if err != nil {
+		panic(err)
+	}
+	message["msCount"] = z
+	n, err := devices.Count()
+	if err != nil {
+		panic(err)
+	}
+	message["totalCount"] = n
+	data, err := json.Marshal(message)
+	if err != nil {
+		return []byte("{}")
+	}
+	return data
+}
+
 func renderTemplate(template string, vars jet.VarMap, request *http.Request, writer http.ResponseWriter, context interface{}) {
 	writer.Header().Add("Link", "</static/js/script.js>; rel=preload; as=script, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.googleapis.com>; rel=preconnect, <https://bootswatch.com>; rel=preconnect, <https://cdn.jsdelivr.net>; rel=preconnect,")
 	t, err := view.GetTemplate(template)
@@ -131,7 +167,7 @@ func logger(next http.Handler) http.Handler {
 
 func blacklist(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		c, err := minerCollection.Find(bson.M{"_id": realip.FromRequest(r), "banned": true}).Count()
+		c, _ := minerCollection.Find(bson.M{"_id": realip.FromRequest(r), "banned": true}).Count()
 		if c < 1 {
 			next.ServeHTTP(w, r)
 		} else {
