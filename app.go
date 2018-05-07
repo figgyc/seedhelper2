@@ -71,7 +71,7 @@ func contains(s []string, e string) bool {
 }
 
 func buildMessage(command string) []byte {
-	var message map[string]interface{}
+	message := make(map[string]interface{})
 	message["status"] = command
 	message["minerCount"] = len(miners)
 	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": time.Time{}}).Count()
