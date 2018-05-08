@@ -140,7 +140,7 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 	}
 	vars.Set("totalCount", n)
 	var tminers []bson.M
-	q := minerCollection.Find(bson.M{}).Sort("-score").Limit(5)
+	q := minerCollection.Find(bson.M{"score": bson.M{"$gt": 0}}).Sort("-score").Limit(5)
 	err = q.All(&tminers)
 	if err != nil {
 		panic(err)
