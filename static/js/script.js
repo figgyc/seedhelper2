@@ -169,9 +169,9 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseThree").classList.remove("show")
         document.getElementById("collapseFour").classList.add("show")
         document.getElementById("collapseFive").classList.remove("show")
-        //document.getElementById("bfProgress").classList.add("bg-warning")
+        document.getElementById("bfProgress").classList.remove("bg-warning")
         document.getElementById("id0Fill").innerText = localStorage.getItem("id0")
-        //document.getElementById("bfProgress").innerText = "Bruteforcing..."
+        document.getElementById("bfProgress").innerText = "Waiting..."
     }
     if (data.status == "bruteforcing") {
         /* 
