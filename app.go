@@ -51,6 +51,7 @@ type Device struct {
 	MSed       [0x140]byte
 	MSData     [12]byte
 	ExpiryTime time.Time `bson:",omitempty"`
+	CheckTime  time.Time
 	Miner      string
 }
 
@@ -860,24 +861,14 @@ func main() {
 	// allows user cancel and not overshooting the 1hr job max time
 	router.HandleFunc("/check/{id0}", func(w http.ResponseWriter, r *http.Request) {
 		id0 := mux.Vars(r)["id0"]
-		query := devices.Find(bson.M{"_id": id0})
+		query := devices.Find(bson.M{"_id": id0, "haspart1": true, "hasmovable": bson.M{"$ne": true}, "wantsbf": true, "miner": realip.FromRequest(r), "expirytime": bson.M{"$gt": time.Now()}})
 		count, err := query.Count()
 		if err != nil || count < 1 {
 			w.Write([]byte("error"))
 			log.Println("z", err, count)
 			return
 		}
-		var device Device
-		err = query.One(&device)
-		if err != nil || device.HasPart1 == false || device.HasMovable == true {
-			w.Write([]byte("error"))
-			log.Println("a", err)
-			return
-		}
-		if device.WantsBF == false || device.ExpiryTime.Before(time.Now()) == true || device.Miner != realip.FromRequest(r) {
-			w.Write([]byte("error"))
-			return
-		}
+		devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"checktime": time.Now().Add(time.Minute)}})
 		miners[realip.FromRequest(r)] = time.Now()
 		w.Write([]byte("ok"))
 	})
@@ -991,20 +982,13 @@ func main() {
 	})
 
 	// anti abuse task
-	ticker := time.NewTicker(5 * time.Minute)
+	ticker := time.NewTicker(15 * time.Second)
 	quit := make(chan struct{})
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
 				log.Println("running task")
-				query := devices.Find(bson.M{"wantsbf": true, "hasmovable": bson.M{"$ne": true}, "expirytime": bson.M{"$ne": time.Time{}, "$lt": time.Now()}})
-				var theDevices []bson.M
-				err := query.All(&theDevices)
-				if err != nil {
-					log.Println(err)
-					//return
-				}
 				log.Println(miners)
 				for ip, miner := range miners {
 					if miner.Before(time.Now().Add(time.Minute*-5)) == true {
@@ -1016,25 +1000,53 @@ func main() {
 						delete(iminers, ip)
 					}
 				}
+				query := devices.Find(bson.M{"wantsbf": true, "hasmovable": bson.M{"$ne": true}, "$or": bson.M{"claimtime": bson.M{"$lt": time.Now()}, "expirytime": bson.M{"$ne": time.Time{}, "$lt": time.Now()}}})
+				var theDevices []bson.M
+				err := query.All(&theDevices)
+				if err != nil {
+					log.Println(err)
+					//return
+				}
 				for _, device := range theDevices {
-					err = devices.Update(bson.M{"_id": device["_id"]}, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
-					if err != nil {
-						log.Println(err)
-						//return
-					}
+					if device["checktime"].(time.Time).After(time.Now()) {
+						err = devices.Update(bson.M{"_id": device["_id"]}, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
+						if err != nil {
+							log.Println(err)
+							//return
+						}
 
-					minerCollection.Upsert(bson.M{"_id": device["mimer"]}, bson.M{"$inc": bson.M{"score": -3}})
+						minerCollection.Upsert(bson.M{"_id": device["miner"]}, bson.M{"$inc": bson.M{"score": -3}})
 
-					for id0, conn := range connections {
-						if id0 == device["_id"] {
-							if err := conn.WriteMessage(websocket.TextMessage, buildMessage("flag")); err != nil {
-								log.Println(err)
-								delete(connections, id0)
-								//return
+						for id0, conn := range connections {
+							if id0 == device["_id"] {
+								if err := conn.WriteMessage(websocket.TextMessage, buildMessage("flag")); err != nil {
+									log.Println(err)
+									delete(connections, id0)
+									//return
+								}
 							}
 						}
+						log.Println(device["_id"], "job has expired")
+
+					} else {
+						// checktime expired
+						err = devices.Update(bson.M{"_id": device["_id"]}, bson.M{"$set": bson.M{"expirytime": time.Time{}}})
+						if err != nil {
+							log.Println(err)
+							//return
+						}
+
+						for id0, conn := range connections {
+							if id0 == device["_id"] {
+								if err := conn.WriteMessage(websocket.TextMessage, buildMessage("queue")); err != nil {
+									log.Println(err)
+									delete(connections, id0)
+									//return
+								}
+							}
+						}
+						log.Println(device["_id"], "job has checktimed")
 					}
-					log.Println(device["_id"], "job has expired")
 				}
 			case <-quit:
 				ticker.Stop()
