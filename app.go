@@ -360,6 +360,7 @@ func main() {
 				}
 				if object["id0"] == nil {
 					//return
+					continue
 				}
 				//log.Println(object["part1"], "packet")
 				/*isRegistered := false
@@ -1000,7 +1001,7 @@ func main() {
 						delete(iminers, ip)
 					}
 				}
-				query := devices.Find(bson.M{"wantsbf": true, "hasmovable": bson.M{"$ne": true}, "$or": bson.M{"claimtime": bson.M{"$lt": time.Now()}, "expirytime": bson.M{"$ne": time.Time{}, "$lt": time.Now()}}})
+				query := devices.Find(bson.M{"wantsbf": true, "hasmovable": bson.M{"$ne": true}, "$or": []bson.M{bson.M{"claimtime": bson.M{"$lt": time.Now()}}, bson.M{"expirytime": bson.M{"$ne": time.Time{}, "$lt": time.Now()}}}})
 				var theDevices []bson.M
 				err := query.All(&theDevices)
 				if err != nil {
