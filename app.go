@@ -1009,7 +1009,7 @@ func main() {
 					//return
 				}
 				for _, device := range theDevices {
-					if device["checktime"].(time.Time).After(time.Now()) {
+					if v, ok := device["checktime"].(time.Time); ok && v.After(time.Now()) {
 						err = devices.Update(bson.M{"_id": device["_id"]}, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
 						if err != nil {
 							log.Println(err)
