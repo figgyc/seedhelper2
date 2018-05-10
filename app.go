@@ -173,6 +173,7 @@ func blacklist(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		} else {
 			w.WriteHeader(403)
+			w.Header().Add("X-Seedhelper-Banned", "true")
 			w.Write([]byte("You have been banned from Seedhelper. This is probably because your script is glitching out. If you think you should be unbanned then find figgyc on Discord."))
 		}
 	})
