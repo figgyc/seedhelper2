@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import aiohttp, asyncio, sys, subprocess, json, time
+import aiohttp, asyncio, sys, json, time
 
 currentversion = "3.0"
 enableupdater = False
@@ -14,7 +14,7 @@ try:
     with open('config', 'r') as file: 
         config = json.load(file)
 except Exception:
-    pass
+    open('config', 'a').close()
 
 async def download(session, url, filename):
     async with session.get(url) as resp:
@@ -59,8 +59,9 @@ async def main():
             timeA = time.time()
             timeB = time.time() + 200
             await download(session, baseurl + '/static/impossible_part1.sed', 'movable_part1.sed')
-            process = subprocess.Popen([sys.executable, 'seedminer_launcher3.py', 'gpu'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, universal_newlines=True)
-            while process.poll() == None:
+            create = asyncio.create_subprocess_exec([sys.executable, 'seedminer_launcher3.py', 'gpu'], stdout=asyncio.subprocess.PIPE)
+            process = await create
+            while process.returncode == None:
                 line = process.stdout.readline()
                 sys.stdout.write(line)
                 if 'offset:10' in line:
