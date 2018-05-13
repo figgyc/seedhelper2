@@ -158,7 +158,12 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFour").classList.remove("show")
         document.getElementById("collapseFive").classList.remove("show")
         document.getElementById("fcError").style.display = "block"
-        document.getElementById("fcError").innerText = "Your movable.sed took to long to bruteforce. This is most likely because your ID0 was incorrect. Please make sure it is correct by asking for help."
+        document.getElementById("beginButton").disabled = true
+        document.getElementById("fcError").innerText = "Your movable.sed took to long to bruteforce. This is most likely because your ID0 was incorrect. You will need to ask for help on the "
+        let link = document.createElement("a")
+        link.innerText = "Nintendo Homebrew Discord."
+        link.href = "https://discord.gg/C29hYvh"
+        document.getElementById("fcError").appendChild(link)
     }
     if (data.status == "queue") {
         /* 

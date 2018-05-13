@@ -53,6 +53,8 @@ type Device struct {
 	ExpiryTime time.Time `bson:",omitempty"`
 	CheckTime  time.Time
 	Miner      string
+	Expired    bool
+	Cancelled  bool
 }
 
 // Miner : struct for tracking miners
@@ -363,6 +365,7 @@ func main() {
 					//return
 					continue
 				}
+				log.Println("identify:", realip.FromRequest(r), object["id0"])
 				//log.Println(object["part1"], "packet")
 				/*isRegistered := false
 				for _, v := range connections {
@@ -383,13 +386,22 @@ func main() {
 					}
 				} else if object["request"] == "cancel" {
 					// canseru jobbu
-					err := devices.Remove(bson.M{"_id": object["id0"]})
+					err := devices.Update(bson.M{"_id": object["id0"].(string)}, bson.M{"cancelled": true})
 					if err != nil {
 						w.Write([]byte("error"))
 						return
 					}
 				} else if object["part1"] != nil {
 					// add to work pool
+
+					c, err := devices.Find(bson.M{"_id": object["id0"], "expired": true}).Count()
+					if err != nil || c > 0 {
+						if err := conn.WriteMessage(websocket.TextMessage, buildMessage("flag")); err != nil {
+							log.Println(err)
+							return
+						}
+						continue
+					}
 					valid := true
 					if regexp.MustCompile("[0-9a-fA-F]{32}").MatchString(object["id0"].(string)) == false {
 						valid = false
@@ -438,6 +450,15 @@ func main() {
 					}
 				} else if object["friendCode"] != nil {
 					// add to bot pool
+
+					c, err := devices.Find(bson.M{"_id": object["id0"], "expired": true}).Count()
+					if err != nil || c > 0 {
+						if err := conn.WriteMessage(websocket.TextMessage, buildMessage("flag")); err != nil {
+							log.Println(err)
+							return
+						}
+						continue
+					}
 					/*
 						based on https://github.com/ihaveamac/Kurisu/blob/master/addons/friendcode.py#L24
 						    def verify_fc(self, fc):
@@ -1011,7 +1032,7 @@ func main() {
 				}
 				for _, device := range theDevices {
 					if v, ok := device["checktime"].(time.Time); ok && v.After(time.Now()) {
-						err = devices.Update(bson.M{"_id": device["_id"]}, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false}})
+						err = devices.Update(bson.M{"_id": device["_id"]}, bson.M{"$set": bson.M{"expirytime": time.Time{}, "wantsbf": false, "expired": true}})
 						if err != nil {
 							log.Println(err)
 							//return

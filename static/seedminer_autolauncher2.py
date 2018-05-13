@@ -72,7 +72,7 @@ async def main():
             process = await asyncio.create_subprocess_exec(sys.executable, 'seedminer_launcher3.py', 'gpu', stdout=asyncio.subprocess.PIPE, cwd=os.getcwd(), stdin=asyncio.subprocess.PIPE)
             while process.returncode == None:
                 print(process.returncode)
-                data = await process.stdout.read(10)
+                data, _ = await process.communicate()
                 line = data.decode('ascii')
                 sys.stdout.write(line)
                 sys.stdout.flush()
