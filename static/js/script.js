@@ -219,8 +219,10 @@ document.getElementById("p1file").addEventListener("change", (e) => {
             let arrayBuffer = fileReader.result
             let lfcsBuffer = arrayBuffer.slice(0, 8)
             let lfcsArray = new Uint8Array(lfcsBuffer)
-            if (lfcsBuffer == new Uint8Array(8)) {
-                alert("part1 is invalid")
+            let textDecoder = new TextDecoder()
+            let lfcsString = textDecoder.decode(lfcsArray)
+            if (lfcsString == textDecoder.decode(new Uint8Array(8))) {
+                alert("movable_part1.sed is invalid")
                 return
             }
             document.getElementById("part1b64").value = base64ArrayBuffer(lfcsBuffer)
@@ -228,7 +230,6 @@ document.getElementById("p1file").addEventListener("change", (e) => {
             let id0Array = new Uint8Array(id0Buffer)
             document.getElementById("friendCode").disabled = true
             document.getElementById("friendCode").value = "movable_part1 provided"
-            let textDecoder = new TextDecoder()
             let id0String = textDecoder.decode(id0Array)
             console.log(id0String,  btoa(id0String), id0String.length)
             if (btoa(id0String) != "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=") { // non blank, if id0 is injected with seedminer_helper
