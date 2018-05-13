@@ -103,6 +103,7 @@
                     <a href="#" id="downloadPart1" class="disableButton">download movable_part1.sed</a> and go back to the guide and bruteforce the movable.sed yourself. Otherwise,
                     <b>press Continue</b> if you need someone else to bruteforce it.
                     <button id="continue" class="btn btn-primary">Continue</button>
+                    <a href="#" id="downloadPart12" class="disableButton btn">Download movable_part1.sed</a>
                     <button id="cancelButton2" class="btn">Do another device</button>
                     <!-- <p style="color: red">The bruteforce client is currently disabled while the rest of the service is disabled. Ask elsewhere, such as Discord or GBATemp, for a friend to bruteforce if you need it.</p> -->
                     <p id="disableMessage" style="display: none;">If you are bruteforceing with your own GPU, you don't need to press this button! If you downloaded your

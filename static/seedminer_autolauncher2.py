@@ -71,8 +71,7 @@ async def main():
             await download(session, baseurl + '/static/impossible_part1.sed', 'movable_part1.sed')
             process = await asyncio.create_subprocess_exec(sys.executable, 'seedminer_launcher3.py', 'gpu', stdout=asyncio.subprocess.PIPE, cwd=os.getcwd(), stdin=asyncio.subprocess.PIPE)
             while process.returncode == None:
-                print(process.returncode)
-                data, _ = await process.communicate()
+                data = await process.stdout.read()
                 line = data.decode('ascii')
                 sys.stdout.write(line)
                 sys.stdout.flush()
