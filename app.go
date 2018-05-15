@@ -737,7 +737,7 @@ func main() {
 			}
 		}
 
-		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"wantsbf": kill, "expirytime": time.Time{}}})
+		err := devices.Update(bson.M{"_id": id0}, bson.M{"$set": bson.M{"wantsbf": kill, "expired": (yn[0] == "y"), "expirytime": time.Time{}}})
 		if err != nil {
 			w.Write([]byte("error"))
 			return
