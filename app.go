@@ -783,12 +783,12 @@ func main() {
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()
 		iminers[realip.FromRequest(r)] = time.Now()
-		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": bson.M{"$ne": true}, "expirytime": bson.M{"$ne": time.Time{}}, "expired": bson.M{"$ne": true}}).Count()
+		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": bson.M{"$ne": true}, "expirytime": bson.M{"$ne": time.Time{}}}).Count()
 		if ok > 0 {
 			w.Write([]byte("nothing"))
 			return
 		}
-		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}})
+		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}, "expired": bson.M{"$ne": true}})
 		count, err := query.Count()
 		if err != nil || count < 1 {
 			w.Write([]byte("nothing"))
