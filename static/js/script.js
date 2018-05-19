@@ -148,6 +148,7 @@ socket.addEventListener("message", (e) => {
         document.getElementById("collapseFour").classList.remove("show")
         document.getElementById("collapseFive").classList.add("show")
         document.getElementById("downloadMovable").href = "/movable/" + localStorage.getItem("id0")
+        document.getElementById("downloadMovable2").href = "/movable/" + localStorage.getItem("id0")
     }
     if (data.status == "flag") {
         /* 
