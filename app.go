@@ -82,7 +82,7 @@ func buildMessage(command string) []byte {
 		panic(err)
 	}
 	message["userCount"] = c
-	b, err := devices.Find(bson.M{"hasmovable": bson.M{"$ne": true}, "haspart1": true, "wantsbf": true, "expirytime": bson.M{"$gt": time.Now()}}).Count()
+	b, err := devices.Find(bson.M{"hasmovable": bson.M{"$ne": true}, "haspart1": true, "wantsbf": true, "expirytime": bson.M{"$gt": time.Now()}, "expired": bson.M{"$ne": true}}).Count()
 	if err != nil {
 		panic(err)
 	}
