@@ -77,7 +77,7 @@ func buildMessage(command string) []byte {
 	message := make(map[string]interface{})
 	message["status"] = command
 	message["minerCount"] = len(miners)
-	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": time.Time{}}).Count()
+	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": time.Time{}, "expired": bson.M{"$ne": true}}).Count()
 	if err != nil {
 		panic(err)
 	}
