@@ -153,6 +153,7 @@
                     <a href="#" id="downloadMovable">Download movable.sed</a> and go back to the guide to inject your DSiWare. Thanks to the people who run
                     the bruteforcing script who make this service possible!
                     <br>
+		    <a href="#" class="btn btn-primary" id="downloadMovable2">Download movable.sed</a>
                     <button id="cancelButton3" class="btn">Do another device</button>
                 </div>
             </div>

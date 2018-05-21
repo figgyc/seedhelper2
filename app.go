@@ -77,12 +77,12 @@ func buildMessage(command string) []byte {
 	message := make(map[string]interface{})
 	message["status"] = command
 	message["minerCount"] = len(miners)
-	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": time.Time{}}).Count()
+	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": time.Time{}, "expired": bson.M{"$ne": true}}).Count()
 	if err != nil {
 		panic(err)
 	}
 	message["userCount"] = c
-	b, err := devices.Find(bson.M{"hasmovable": bson.M{"$ne": true}, "haspart1": true, "wantsbf": true, "expirytime": bson.M{"$gt": time.Now()}}).Count()
+	b, err := devices.Find(bson.M{"hasmovable": bson.M{"$ne": true}, "haspart1": true, "wantsbf": true, "expirytime": bson.M{"$gt": time.Now()}, "expired": bson.M{"$ne": true}}).Count()
 	if err != nil {
 		panic(err)
 	}
@@ -117,12 +117,12 @@ func renderTemplate(template string, vars jet.VarMap, request *http.Request, wri
 	}
 	vars.Set("isUp", (lastBotInteraction.After(time.Now().Add(time.Minute * -5))))
 	vars.Set("minerCount", len(miners))
-	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": time.Time{}}).Count()
+	c, err := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": time.Time{}, "expired": bson.M{"$ne": true}}).Count()
 	if err != nil {
 		panic(err)
 	}
 	vars.Set("userCount", c)
-	b, err := devices.Find(bson.M{"hasmovable": bson.M{"$ne": true}, "haspart1": true, "wantsbf": true, "expirytime": bson.M{"$gt": time.Now()}}).Count()
+	b, err := devices.Find(bson.M{"hasmovable": bson.M{"$ne": true}, "haspart1": true, "wantsbf": true, "expirytime": bson.M{"$gt": time.Now()}, "expired": bson.M{"$ne": true}}).Count()
 	if err != nil {
 		panic(err)
 	}
@@ -783,12 +783,12 @@ func main() {
 	router.HandleFunc("/getwork", func(w http.ResponseWriter, r *http.Request) {
 		miners[realip.FromRequest(r)] = time.Now()
 		iminers[realip.FromRequest(r)] = time.Now()
-		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": bson.M{"$ne": true}, "expirytime": bson.M{"$ne": time.Time{}}}).Count()
+		ok, err := devices.Find(bson.M{"miner": realip.FromRequest(r), "hasmovable": bson.M{"$ne": true}, "expirytime": bson.M{"$ne": time.Time{}}, "expired": bson.M{"$ne": true}}).Count()
 		if ok > 0 {
 			w.Write([]byte("nothing"))
 			return
 		}
-		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}})
+		query := devices.Find(bson.M{"haspart1": true, "wantsbf": true, "expirytime": bson.M{"$eq": time.Time{}}, "expired": bson.M{"$ne": true}})
 		count, err := query.Count()
 		if err != nil || count < 1 {
 			w.Write([]byte("nothing"))
@@ -1023,7 +1023,7 @@ func main() {
 						delete(iminers, ip)
 					}
 				}
-				query := devices.Find(bson.M{"wantsbf": true, "hasmovable": bson.M{"$ne": true}, "$or": []bson.M{bson.M{"claimtime": bson.M{"$lt": time.Now()}}, bson.M{"expirytime": bson.M{"$ne": time.Time{}, "$lt": time.Now()}}}})
+				query := devices.Find(bson.M{"wantsbf": true, "hasmovable": bson.M{"$ne": true}, "$or": []bson.M{bson.M{"claimtime": bson.M{"$lt": time.Now()}}, bson.M{"expirytime": bson.M{"$ne": time.Time{}, "$lt": time.Now()}}, bson.M{"expired": true}}})
 				var theDevices []bson.M
 				err := query.All(&theDevices)
 				if err != nil {
