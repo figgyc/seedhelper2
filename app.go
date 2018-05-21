@@ -1084,6 +1084,13 @@ func main() {
 		HostPolicy: autocert.HostWhitelist("seedhelper.figgyc.uk"),
 		Cache:      autocert.DirCache("."),
 	}
+	httpSrv := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Handler:      router,
+	}
+	httpSrv.Addr = ":80"
 	httpsSrv := &http.Server{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
@@ -1092,6 +1099,6 @@ func main() {
 	}
 	httpsSrv.Addr = ":443"
 	httpsSrv.TLSConfig = &tls.Config{GetCertificate: m.GetCertificate}
-	go http.ListenAndServe(":80", m.HTTPHandler(router))
+	go httpSrv.ListenAndServe()
 	httpsSrv.ListenAndServeTLS("", "")
 }
