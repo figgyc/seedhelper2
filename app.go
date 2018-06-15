@@ -386,7 +386,7 @@ func main() {
 					}
 				} else if object["request"] == "cancel" {
 					// canseru jobbu
-					err := devices.Update(bson.M{"_id": object["id0"].(string)}, bson.M{"cancelled": true})
+					err := devices.Update(bson.M{"_id": object["id0"].(string)}, bson.M{"$set": bson.M{"cancelled": true}})
 					if err != nil {
 						w.Write([]byte("error"))
 						return
