@@ -13,12 +13,19 @@ import io
 import getpass
 import requests
 import shutil
+import pickle
 
 s = requests.Session()
 baseurl = "https://seedhelper.figgyc.uk"
 currentid = ""
 currentVersion = "2.1.1"
 
+if os.path.isfile("total_mined"):
+    with open("total_mined", "rb") as file:
+        total_mined = pickle.load(file)
+else:
+    total_mined = 0
+print("Total seeds mined previously: {}".format(total_mined))
 # https://stackoverflow.com/a/16696317 thx
 
 
@@ -164,6 +171,10 @@ while True:
                         os.remove("movable.sed")
                         os.remove(latest_file)
                         currentid = ""
+                        total_mined += 1
+                        print("Total seeds mined: {}".format(total_mined))
+                        with open("total_mined", "wb") as file:
+                            pickle.dump(total_mined, file)
                         print("press ctrl-c to quit")
                         time.sleep(5)
                     else:
